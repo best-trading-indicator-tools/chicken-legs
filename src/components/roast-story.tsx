@@ -1,4 +1,4 @@
-import { ArrowUpRight, ChevronDown, Flame } from 'lucide-react';
+import { ArrowUpRight, Flame } from 'lucide-react';
 import styles from './roast-story.module.css';
 
 export default function RoastStory() {
@@ -18,13 +18,6 @@ export default function RoastStory() {
       </a>
       <figcaption>
         <div className={styles.captionRow}><span>Actual comments. Unexpected motivation.</span><a href="/images/chicken-legs-roasts-800.webp" target="_blank" rel="noopener noreferrer">View collage <ArrowUpRight size={16} aria-hidden="true" /><span className={styles.screenReaderOnly}> (opens in a new tab)</span></a></div>
-        <details className={styles.transcript}>
-          <summary>Read a few of the roasts <ChevronDown size={16} aria-hidden="true" /></summary>
-          <blockquote><p>“They are still chicken”</p><cite>— Ivom</cite></blockquote>
-          <blockquote><p>“You’re showing me leg bones I didn’t even know existed”</p><cite>— peanut buttah</cite></blockquote>
-          <blockquote><p>“Now they are turkey legs”</p><cite>— Pondtoshi Porkamoto</cite></blockquote>
-          <blockquote><p>“And… you’ve never had a leg day in your life.”</p><cite>— 3-ide-RAVEN</cite></blockquote>
-        </details>
       </figcaption>
     </figure>
   </section>;

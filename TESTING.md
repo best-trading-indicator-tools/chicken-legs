@@ -125,13 +125,15 @@ and verification scripts are kept locally under `output/playwright/`.
 
 ## Roast backstory — 21 September 2026
 
+- Removed the redundant “Read a few of the roasts” expandable quotes. A rendered
+  page check confirmed they are absent while the collage and full-size link remain;
+  the production build and TypeScript passed after removal.
 - The new backstory is the first section after the hero and preserves the existing
   `#the-story` navigation target without duplicating the story further down the page.
 - Browser checks passed at 1440, 1024, 768, 390 and 320px: the supplied collage
   loads at its original aspect ratio, there is no horizontal overflow, and body
   copy stays at 16px. Desktop and mobile captures were visually reviewed.
-- The comment excerpts open and close with Enter at every tested width and remain
-  readable without horizontal scrolling. The image opens in a separate tab, the
+- The image opens in a separate tab, the
   comeback link returns to sponsorships, and the existing checkout dialog opens
   and dismisses normally. No payment was submitted and no browser errors appeared.
 - Type checking and the production build passed. Payment code was not changed;
