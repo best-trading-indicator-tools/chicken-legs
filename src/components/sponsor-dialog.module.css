@@ -9,7 +9,7 @@
   border: 1px solid #40523d;
   border-radius: 5px;
   color: #cad9bf;
-  font-size: 12px;
+  font-size: var(--text-small);
   font-weight: 600;
 }
 
@@ -37,7 +37,7 @@
 }
 
 .header h2 { font-size: 27px; line-height: 1.2; font-weight: 500; letter-spacing: -.6px; }
-.header p { margin-top: 10px; color: #98ab99; font-size: 12px; line-height: 1.6; }
+.header p { margin-top: 10px; color: #98ab99; font-size: var(--text-small); line-height: 1.6; }
 .close { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; color: #b0bdad; margin: -7px -8px 0 0; }
 .close:hover { color: var(--lime); background: #caf5780c; }
 .content { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 8px 28px; }
@@ -55,28 +55,35 @@
 .amount { flex-shrink: 0; font-size: 19px; color: #c5d3b8; font-variant-numeric: tabular-nums; letter-spacing: -.5px; }
 .state { padding: 32px 8px 38px; text-align: center; }
 .state h3 { font-size: 21px; font-weight: 500; line-height: 1.4; }
-.state p { color: #98ab99; font-size: 13px; line-height: 1.7; margin: 12px auto 22px; max-width: 320px; }
+.state p { color: #98ab99; font-size: var(--text-small); line-height: 1.7; margin: 12px auto 22px; max-width: 320px; }
 .emptyIcon { color: var(--lime); margin-bottom: 20px; }
-.action { display: flex; justify-content: center; align-items: center; gap: 9px; min-height: 44px; color: var(--lime); font-size: 12px; padding: 9px 0; }
+.action { display: flex; justify-content: center; align-items: center; gap: 9px; min-height: 44px; color: var(--lime); font-size: var(--text-small); padding: 9px 0; }
 .action:hover { color: #e3ffb8; }
 .state .action { margin: auto; }
 .loading { padding: 38px 8px; color: #cad9bf; font-size: 14px; text-align: center; }
 .footer { padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-top: 1px solid #36432f; flex-shrink: 0; }
-.footer p { color: #98ab99; font-size: 11px; line-height: 1.6; max-width: 230px; }
+.footer p { color: #98ab99; font-size: var(--text-small); line-height: 1.6; max-width: 230px; }
 .footer .action { flex-shrink: 0; }
 
 @media (max-width: 480px) {
   .dialog { width: calc(100% - 24px); max-height: calc(100dvh - 32px); border-radius: 13px; }
   .header { padding: 24px 18px 18px; gap: 6px; }
   .header h2 { font-size: 23px; }
-  .header p { font-size: 11px; }
+  .header p { font-size: var(--text-small); }
   .content { padding: 0 18px; }
   .row { padding: 20px 0; gap: 12px; }
   .sponsor h3 { font-size: 17px; }
-  .brand { font-size: 13px; gap: 7px; }
+  .brand { font-size: var(--text-small); gap: 7px; }
   .amount { font-size: 16px; }
   .logo { width: 26px; height: 26px; }
   .state { padding-left: 0; padding-right: 0; }
   .footer { padding: 14px 18px; gap: 8px; flex-wrap: wrap; }
   .footer p { max-width: none; }
 }
+
+/* Match the campaign’s readable text scale. */
+.trigger,.action,.brand,.state p{font-size:var(--text-body)}
+.header p,.footer p{font-size:var(--text-small)}
+.footer{flex-wrap:wrap}.footer p{max-width:none}
+.header p,.footer p,.state p{color:#b0c0b3}
+@media(max-width:480px){.brand{font-size:var(--text-body)}.sponsor h3{font-size:18px}.amount{font-size:18px}.row{flex-wrap:wrap;align-items:flex-start}.sponsor{flex:1 1 160px}.amount{margin-left:auto}.header h2{font-size:24px}}

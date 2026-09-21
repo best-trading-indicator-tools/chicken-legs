@@ -23,7 +23,25 @@ payments or deployment are ready.
   Stripe responses remained simulated. The isolated test cluster was stopped
   after verification and did not change the app's local environment.
 
-## Sponsor-list modal — latest verification
+## Site-wide readability — latest verification
+
+- Initial rendered-page scan found 119 visible text fragments below 14px.
+- Replaced the 6–13px styles with shared type sizes: at least 14px for labels,
+  16px for body text and form fields, and larger prices/countdown figures.
+- Audited 50 rendered states at widths 320, 390, 640, 768, 1024, 1280 and 1440px.
+  These cover both photo views, expanded FAQs, all dialogs, long sponsor names,
+  populated bid history, availability errors and the payment notice.
+- No visible text below 14px, form/input placeholder text below 16px, page overflow
+  or unintended horizontal clipping was found in the final scan. Screen-reader-only
+  instructions and intentionally scrollable history tables were handled separately.
+- Photo labels wrap within the viewer; complete sponsor names remain available
+  through accessible labels and the sponsor list. Desktop/mobile screens were
+  visually reviewed.
+- All 183 existing browser interaction assertions passed after the changes:
+  89 photo-viewer, 36 campaign-page, 51 sponsor-list and 7 modal keyboard checks.
+- TypeScript and production build passed. Test fixtures were removed afterward.
+
+## Sponsor-list modal verification
 
 The View the Sponsors button opens a Meet the sponsors dialog. **94 browser
 assertions passed** for this change: 51 sponsor-list checks, 7 keyboard/backdrop

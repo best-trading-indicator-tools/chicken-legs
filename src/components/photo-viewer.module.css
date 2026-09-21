@@ -76,20 +76,24 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  max-width: 100px;
+  width: max-content;
+  max-width: min(140px, var(--label-space, 140px));
   padding: 5px 6px;
   border: 1px solid #caf57838;
   border-radius: 3px;
   color: #e7eddf;
   background: #0b1513df;
-  font-family: var(--font-mono), monospace;
-  font-size: 8px;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-small);
   font-weight: 500;
-  letter-spacing: .04em;
+  letter-spacing: 0;
   line-height: 1.3;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
   overflow: hidden;
-  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .marker[data-direction="left"] .markerLabel { right: calc(100% + 7px); }
@@ -107,7 +111,7 @@
   text-align: center;
   background: #0b1513e8;
   color: #bccac1;
-  font-size: 12px;
+  font-size: var(--text-body);
   line-height: 1.7;
 }
 

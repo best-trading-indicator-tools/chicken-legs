@@ -145,7 +145,7 @@ export default function CampaignPage() {
 
         <aside className="sponsor-panel" id="sponsorships" aria-labelledby="sponsorship-title">
           <div className="panel-status"><span className="status-dot" /> {auctions.closed ? 'BIDDING CLOSED' : auctions.mode === 'live' && auctions.paymentsEnabled ? 'SPONSORSHIPS ARE OPEN' : auctions.mode === 'sandbox' ? 'TEST DRIVE · NO REAL PAYMENTS' : 'FIRST LOOK · BIDDING OPENS SOON'}<span>↗</span></div>
-          <div className="panel-heading"><h2 id="sponsorship-title">PICK YOUR<br />PIECE OF LEG.</h2><p>Eight spots. One unforgettable placement.</p></div>
+          <div className="panel-heading"><h2 id="sponsorship-title">PICK YOUR<br /> PIECE OF LEG.</h2><p>Eight spots. One unforgettable placement.</p></div>
           <div className="slots-list" aria-label="Sponsorship spots">{auctions.slots.map((slot, index) => <button key={slot.id} className={`slot-row ${selectedId === slot.id ? 'selected' : ''}`} onClick={() => selectSlot(slot.id)} aria-pressed={selectedId === slot.id}>
             <span className="slot-number">0{index + 1}</span><span className="slot-description"><strong>{slot.label}</strong><span>{slot.reserved ? 'Checkout in progress' : slot.sponsor ? slot.sponsor.name : 'Your brand here'}</span></span><span className="slot-price">{slot.nextBidCents === null ? 'At limit' : formatUsd(slot.nextBidCents)}<span>{slot.sponsor ? 'to take over' : 'opening bid'}</span></span><ArrowUpRight className="slot-arrow" size={15} />
           </button>)}</div>
