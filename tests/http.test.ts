@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Stripe from "stripe";
 
 vi.mock("server-only", () => ({}));
+vi.mock("next/server", () => ({ after: vi.fn() }));
 vi.mock("../src/lib/payment-worker", () => ({ recordStripeEvent: vi.fn(), runWorker: vi.fn() }));
 
 import { GET as auctions } from "../src/app/api/auctions/route";
@@ -9,7 +10,8 @@ import { POST as checkout } from "../src/app/api/checkout/route";
 import { GET as status } from "../src/app/api/checkout/status/route";
 import { POST as webhook } from "../src/app/api/stripe/webhook/route";
 import { GET as operations } from "../src/app/api/internal/status/route";
-import { recordStripeEvent } from "../src/lib/payment-worker";
+import { after } from "next/server";
+import { recordStripeEvent, runWorker } from "../src/lib/payment-worker";
 
 beforeEach(() => {
   // These are fake test values, never financial API requests. Explicitly clear
@@ -64,6 +66,7 @@ describe("Stripe webhook trust boundary", () => {
       expect(response.status).toBe(400);
     }
     expect(recordStripeEvent).not.toHaveBeenCalled();
+    expect(after).not.toHaveBeenCalled();
   });
   it("queues a correctly signed raw body before acknowledging", async () => {
     configure();
@@ -72,6 +75,11 @@ describe("Stripe webhook trust boundary", () => {
     const response = await webhook(new Request("http://localhost/api/stripe/webhook", { method: "POST", headers: { "stripe-signature": signature }, body: payload }));
     expect(response.status).toBe(200);
     expect(recordStripeEvent).toHaveBeenCalledWith(expect.objectContaining({ id: "evt_unit" }));
+    expect(after).toHaveBeenCalledOnce();
+    expect(runWorker).not.toHaveBeenCalled();
+    const work = vi.mocked(after).mock.calls[0][0] as () => Promise<void>;
+    await work();
+    expect(runWorker).toHaveBeenCalledOnce();
   });
   it("does not acknowledge an event when durable storage fails", async () => {
     configure();
@@ -81,5 +89,20 @@ describe("Stripe webhook trust boundary", () => {
     const response = await webhook(new Request("http://localhost/api/stripe/webhook", { method: "POST", headers: { "stripe-signature": signature }, body: payload }));
     expect(response.status).toBe(503);
     expect(JSON.stringify(await response.json())).not.toContain("private database error");
+    expect(after).not.toHaveBeenCalled();
+  });
+  it("preserves the acknowledgement when post-response work fails", async () => {
+    configure();
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      vi.mocked(runWorker).mockRejectedValueOnce(new Error("private provider credentials"));
+      const payload = JSON.stringify(event);
+      const signature = Stripe.webhooks.generateTestHeaderString({ payload, secret });
+      const response = await webhook(new Request("http://localhost/api/stripe/webhook", { method: "POST", headers: { "stripe-signature": signature }, body: payload }));
+      const work = vi.mocked(after).mock.calls[0][0] as () => Promise<void>;
+      await expect(work()).resolves.toBeUndefined();
+      expect(response.status).toBe(200);
+      expect(log).toHaveBeenCalledWith("Payment worker interrupted; durable jobs await the next scheduled run.");
+    } finally { log.mockRestore(); }
   });
 });

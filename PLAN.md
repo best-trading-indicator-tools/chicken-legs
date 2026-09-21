@@ -1,6 +1,6 @@
 # Chicken Legs — implementation plan
 
-Status: public presentation now uses the supplied front/back photographs, with all eight sponsorship spots verified on desktop and mobile. The auction backend remains implemented and locally tested. Live checkout remains disabled pending database/webhook/scheduler configuration, real Stripe sandbox verification and remaining launch details.
+Status: the site is deployed at https://chicken-legs.vercel.app. Neon PostgreSQL in Frankfurt is connected and initialized. Real Stripe sandbox checkouts for $1,000 → $2,000 → $4,000 and both fee-adjusted refunds passed. Production secrets and a version-pinned webhook are prepared; live checkout remains disabled while production scheduling and the hosting plan are finalized.
 Updated: 21 September 2026.
 
 ## Confirmed brief
@@ -36,7 +36,7 @@ The [official event website](https://www.marathon06.com/2026/) confirms the even
 
 ### 1. Project foundation and rules
 
-Use Next.js with TypeScript for the website and server endpoints, PostgreSQL for auctions, object storage for public approved assets, and a durable database job queue for payment reconciliation/refunds. Use a lightweight React photo viewer for the public presentation. Earlier Blender assets remain archived in the repository and are not loaded by the campaign page. Hosting proposal: Vercel plus managed PostgreSQL/storage, selected before deployment.
+Use Next.js with TypeScript for the website and server endpoints, PostgreSQL for auctions, object storage for public approved assets, and a durable database job queue for payment reconciliation/refunds. Use a lightweight React photo viewer for the public presentation. Earlier Blender assets remain archived in the repository and are not loaded by the campaign page. Hosting: the existing Vercel project plus Neon PostgreSQL, selected by the user on 21 September. Source media and environment credentials remain ignored locally.
 
 Create a runnable local app, isolated test configuration, database migrations, campaign configuration, and an example environment file containing placeholders only. Make the eight slot IDs permanent. Store money in integer minor units and calculate every price on the server. Store time in UTC and display the Paris timezone explicitly.
 
@@ -148,7 +148,7 @@ Stripe can leave refunds pending when the available balance is insufficient. Dis
 
 - Final presentation sources received: `assets/private/V2/vuedefaceV2.png` and `assets/private/V2/vuededosV2.png`. No additional photos are required for this version.
 - Public name/handle, domain, and support contact. These can remain configurable during the build.
-- The supplied live Stripe key is stored in ignored `.env.local` and passed a read-only account check. Sandbox credentials and webhook setup are still needed for an actual provider round trip. Confirm standard versus IC+ pricing.
+- The live Stripe key is stored in ignored `.env.local`; the supplied test key is in ignored `.env.sandbox.local`. Both authenticated against the same France account. Real sandbox takeovers and EUR-fee refunds passed. Production worker scheduling is still required; the current Vercel Hobby plan only supports daily jobs. The user has been asked whether to upgrade to Pro or prepare another host.
 - Branding dimensions/print requirements and sponsor-logo acceptance rules before taking real payments.
 - Seller/invoicing details and whether advertised prices include applicable taxes. Do not silently add charges to the promised exact doubling.
 - Final customer-facing cancellation/non-participation policy. Recommendation: full refund if the promised race-day placement cannot be delivered; ordinary takeover refunds retain the stated fee deduction. This recommendation is not yet a confirmed campaign term.
@@ -165,6 +165,8 @@ Stripe can leave refunds pending when the available balance is insufficient. Dis
 - Implemented PostgreSQL reservations, server-priced Stripe Checkout, signed webhooks, durable job processing, takeover/refund obligations and exact fee conversion.
 - Earlier Blender source and web assets are retained as archived work. The user rejected the reconstructed likeness; the public presentation now uses the exact supplied front/back photographs.
 - Passed 66 tests against an isolated real PostgreSQL server with simulated Stripe responses, plus production build, type checking, browser interaction checks and Khronos GLB validation (zero errors/warnings).
-- Committed and pushed completed tasks directly to `main` as requested. No PRs and no deployment yet.
+- The existing Git integration deploys `main` to https://chicken-legs.vercel.app. Committed and pushed completed tasks directly to `main` as requested, without PRs.
+- Created the user-authorized free Neon database in Frankfurt and migrated all eight slots. Production data remains empty; sandbox payments use an isolated local PostgreSQL database.
+- Verified real Stripe-hosted sandbox checkout, signed provider webhooks, both takeovers and exactly one successful refund per displaced sponsor. Added immediate post-response worker processing while retaining durable jobs for scheduled recovery. The regression suite now passes all 67 tests on real PostgreSQL.
 
 Blender 4.5.3 is available locally under ignored `output/blender-tool/`. No live payment or refund was used for testing. Read `TESTING.md` and `database/OPERATIONS.md` for precise verification limits and remaining production work, including operator/artwork management and final seller terms.

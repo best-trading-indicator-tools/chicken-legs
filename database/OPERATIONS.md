@@ -1,10 +1,11 @@
 # Payment operations
 
-This implementation is disabled until configured. Unit tests use synthetic data;
-PostgreSQL tests require `TEST_DATABASE_URL`. A real sandbox payment, webhook,
-takeover and refund round trip is still a launch requirement. A supplied live key
-is not a substitute for sandbox credentials. No financial API call is part of
-`npm test`.
+The real Stripe sandbox checkout → webhook → takeover → refund sequence passed
+on 21 September 2026; see `TESTING.md`. Production is connected to the user-approved
+Neon database in Frankfurt, with an empty set of eight auction slots. Live checkout
+remains disabled until hosting and scheduled recovery are ready. Unit tests use
+synthetic Stripe responses; PostgreSQL tests require `TEST_DATABASE_URL`.
+No financial API call is part of `npm test`.
 
 1. Provision PostgreSQL; supply `DATABASE_URL` through a local ignored environment
    file or the deployment secret manager. Run `database/migrate.ts` with that
@@ -27,6 +28,15 @@ is not a substitute for sandbox credentials. No financial API call is part of
    `Authorization: Bearer <WORKER_SECRET>`. Both GET and POST work. A dedicated
    server-side scheduler must send this header; do not put it in browser code.
    The worker processes up to ten jobs or about forty seconds per invocation.
+   On Vercel, set `CRON_SECRET` equal to `WORKER_SECRET`; Vercel sends the matching
+   bearer header. Minute-by-minute Vercel cron requires Pro or Enterprise. The
+   current Hobby project has no cron configured; do not add a minute schedule
+   before upgrading, because deployment will fail. The intended configuration is
+   `"crons": [{ "path": "/api/internal/worker", "schedule": "* * * * *" }]`
+   in `vercel.json` once the plan supports it.
+   Verified Stripe webhooks also start `runWorker()` with Next.js `after()` after
+   committing the event. This makes normal confirmations and refunds prompt;
+   it does not replace the scheduler for abandoned checkouts and delayed retries.
 5. Poll authenticated `/api/internal/status` for review jobs, stalled reservations,
    disputed placements and refund status. Alert on review jobs and worker
    inactivity. Do not switch on checkout before scheduling and monitoring work.
@@ -53,8 +63,8 @@ Missing fee data waits. Unexpected currency, IC+ fees, missing original rate,
 inconsistent itemization, refund failures and disputes need operator review.
 Do not manually refund a payment without reconciling its existing obligation.
 
-Outstanding before real launch: configure/test real PostgreSQL and a Stripe
-sandbox; complete full payment/concurrency/dispute recovery tests; add an
+Outstanding operations work: enable and verify production scheduling and the
+deployed webhook; complete provider-specific dispute recovery checks; add an
 authenticated operator interface and reviewed job-recovery workflow; secure
 sponsor-edit/upload access and artwork export; configure production logs,
 alerting, backups, secrets, and public support/seller/cancellation/tax terms.
@@ -68,3 +78,14 @@ Transaction-pooling proxies cannot preserve that lock; configure the database UR
 with session pooling or a direct connection. Unrelated Stripe Dashboard edits
 and manual refunds require reconciliation. Do not declare winners final until
 the closing-time queue and all pre-cutoff payments are reconciled.
+
+The Neon integration supplies prefixed `CHICKEN_` variables because an empty
+`DATABASE_URL` already existed on Vercel. The application's production
+`DATABASE_URL` uses the direct/unpooled connection with full TLS verification,
+preserving the worker's session advisory lock. Preview configuration is separate.
+The signed live webhook uses API version `2026-08-26.dahlia` and is initially
+disabled until the deployed handler is checked. Never test cards against live keys.
+
+Neon's free compute allowance is finite. Frequent polling keeps its compute awake;
+monitor the project's usage before its allowance is exhausted and choose an
+appropriate database plan or event-driven scheduler for sustained operation.

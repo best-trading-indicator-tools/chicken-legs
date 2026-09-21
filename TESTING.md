@@ -128,7 +128,38 @@ The supplied live Stripe key authenticated successfully against the read-only
 account endpoint; account country/currency matched France/EUR. No real charge,
 refund, payout or financial mutation was used for testing.
 
-A real Stripe sandbox Checkout → webhook → takeover → refund test still requires
-sandbox credentials and a configured endpoint. Hosted PostgreSQL, production
-webhook/worker scheduling, job monitoring, seller/support/cancellation/tax terms,
-and final artwork management must be configured before opening real payments.
+### Actual Stripe sandbox verification — 21 September 2026
+
+The supplied test key authenticated against the same France account as the live
+key. Testing used an isolated local PostgreSQL database, Stripe-hosted Checkout
+in Chromium, and Stripe CLI forwarding signed provider webhooks at the SDK's
+`2026-08-26.dahlia` API version. All payments and refunds below were in test mode.
+
+| Accepted payment | Original EUR Stripe fee | Original EUR per USD rate | Deducted USD fee | Successful USD refund |
+| --- | --- | --- | --- | --- |
+| $1,000 | €46.01 | 0.871598 | $52.79 | $947.21 |
+| $2,000 | €91.76 | 0.871598 | $105.28 | $1,894.72 |
+| $4,000 | Current winner | — | — | No refund owed |
+
+- Actual $1,000 → $2,000 → $4,000 takeovers passed. Stripe confirmed exactly one
+  successful refund per displaced sponsor. Fee deductions were independently
+  recalculated from the original balance transactions using decimal rounding.
+- The API exposes a $4,000 current total, three historical bids, the third sponsor
+  as winner, and an $8,000 next price. Refunds do not inflate the current total.
+- Replaying a real signed success event twice did not create duplicate bids or
+  refunds. A forged signature returned HTTP 400.
+- Stripe's declined-card test returned a visible decline and created no accepted
+  bid. Explicit session expiration delivered a signed event and released the
+  right-quad reservation without affecting the current left-quad sponsor.
+- The final takeover and refund completed through post-response webhook processing
+  with the local polling worker disabled, verifying the immediate processing path.
+- The updated suite passed **67/67 tests** against real PostgreSQL; type checking
+  and the production build passed. Unit/integration tests still simulate Stripe;
+  the browser/provider checks above are separate.
+- The separate production Neon database has eight slots, zero bids and zero jobs.
+  No test sponsors or payment records were copied into it.
+
+Pending production verification: deployed signed webhook, scheduled worker and
+job monitoring. Public seller/support/cancellation/tax details and artwork
+management remain operational follow-ups. A sandbox does not prove live settlement
+timing, insufficient-balance refunds or every issuer/dispute scenario.
