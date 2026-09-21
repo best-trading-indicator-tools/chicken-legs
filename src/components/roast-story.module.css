@@ -46,7 +46,7 @@
 .tweetFallback > div { display: flex; flex-direction: column; line-height: 1.5; }
 .tweetFallback strong, .tweetFallback p { font-size: var(--text-body); }
 .tweetFallback span { color: var(--muted); }
-.tweetFallback p { margin: 16px 0 8px; line-height: 1.6; }
+.tweetFallback p { margin: 16px 0 8px; line-height: 1.6; white-space: pre-line; }
 .tweetFallback time { color: var(--muted); }
 .screenReaderOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 

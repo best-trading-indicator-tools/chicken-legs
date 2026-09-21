@@ -125,6 +125,12 @@ and verification scripts are kept locally under `output/playwright/`.
 
 ## Roast backstory — 21 September 2026
 
+- Added the second source post (September 18) alongside the first (September 13),
+  with separate date labels and replies links. Both live embeds and their source
+  URLs passed browser checks at 1440 and 320px without horizontal overflow; both
+  source fallbacks remained available when X was blocked. Only one copy of X's
+  widget script loads. The production build and TypeScript passed.
+  Captures: `output/playwright/roast-two-posts-*.png`.
 - Embedded the user's original tweet below the collage in X's dark theme, with
   media collapsed and a persistent “Read the replies” source link. The post text
   and attribution were verified against X's oEmbed response.
