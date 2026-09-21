@@ -39,6 +39,7 @@ input:not([type=checkbox]),input::placeholder{font-size:var(--text-body)}
 .hero-copy>.eyebrow{align-items:flex-start}.tiny-line{flex-shrink:0;margin-top:.7em}
 .header-event{letter-spacing:.5px;gap:7px}.brand i{font-size:var(--text-small)}
 .primary-button{line-height:1.5;min-height:48px}.primary-button svg{flex-shrink:0}
+.race-ticket div>span{flex-wrap:wrap;gap:0 9px}.race-route{display:inline-flex;align-items:center;gap:9px;white-space:nowrap}
 .model-topline{align-items:flex-start;flex-wrap:wrap;gap:4px 12px;line-height:1.5;letter-spacing:.6px}
 .model-topline>span:last-child{white-space:nowrap}.model-topline svg{flex-shrink:0}
 .model-bottomline,.photo-stage + .model-bottomline{flex-wrap:wrap;gap:14px;justify-content:center;padding:0}

@@ -139,7 +139,7 @@ export default function CampaignPage() {
           <p className="hero-description">My coach sees a soccer midfielder.<br />The internet sees chicken legs.<br /><strong>I see a business opportunity.</strong></p>
           <a href="#sponsorships" className="primary-button hero-cta">Put your logo on a leg <ArrowUpRight size={19} /></a>
           <button className={sponsorStyles.trigger} type="button" aria-haspopup="dialog" aria-controls="sponsors-dialog" onClick={() => setSponsorsOpen(true)}>View the Sponsors <ArrowUpRight size={16} /></button>
-          <div className="race-ticket"><span className="race-icon"><Footprints size={21} /></span><div><span>NICE <ArrowRight size={11} /> CANNES</span><p>42.195 km. Zero training. <b>08.11.26</b></p></div></div>
+          <div className="race-ticket"><span className="race-icon"><Footprints size={21} /></span><div><span><span className="race-route">NICE <ArrowRight size={11} /> CANNES</span> MARATHON</span><p>42.195 km. Zero training. <b>08.11.26</b></p></div></div>
           <p className="hero-footnote">Yes, these are real legs.<br />Yes, your logo really goes on them.</p>
         </div>
 
