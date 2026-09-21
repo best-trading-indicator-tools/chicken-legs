@@ -112,6 +112,28 @@ export function PhotoViewer({ selectedSlot, onSelectSlot, view, onViewChange, cl
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (!onViewChange) return;
+    const changeView = (event: KeyboardEvent) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      if (event.defaultPrevented || event.repeat || event.isComposing || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      if (document.querySelector("dialog[open], [role='dialog'][aria-modal='true']")) return;
+      const target = event.target;
+      if (target instanceof HTMLElement && (target.isContentEditable || target.closest("input, textarea, select, [role='textbox'], [role='slider']"))) return;
+      const container = containerRef.current;
+      if (!container) return;
+      const bounds = container.getBoundingClientRect();
+      if (bounds.bottom <= 0 || bounds.top >= window.innerHeight || bounds.right <= 0 || bounds.left >= window.innerWidth) return;
+
+      event.preventDefault();
+      // A focused marker disappears with its photograph; keep focus in the viewer.
+      if (target instanceof HTMLElement && target !== container && container.contains(target)) container.focus({ preventScroll: true });
+      onViewChange(view === "front" ? "back" : "front");
+    };
+    window.addEventListener("keydown", changeView);
+    return () => window.removeEventListener("keydown", changeView);
+  }, [onViewChange, view]);
+
   return (
     <div
       ref={containerRef}
@@ -125,16 +147,9 @@ export function PhotoViewer({ selectedSlot, onSelectSlot, view, onViewChange, cl
         if (!(event.target instanceof Element) || event.target.closest("button")) return;
         event.currentTarget.focus({ preventScroll: true });
       }}
-      onKeyDown={(event) => {
-        // Arrow keys only act while the viewer itself has keyboard focus.
-        if (event.target !== event.currentTarget || !onViewChange) return;
-        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-        event.preventDefault();
-        onViewChange(view === "front" ? "back" : "front");
-      }}
     >
       <p id={instructionsId} className={styles.visuallyHidden}>
-        Use the front and back buttons to see both photographs. When this viewer is focused, Left and Right arrow keys switch photographs. Tab to a sponsorship marker and press Enter to select the spot.
+        Use the front and back buttons to see both photographs. While the photograph is on screen, Left and Right arrow keys switch views without needing to focus it first. Shortcuts pause while typing or using a dialog. Tab to a sponsorship marker and press Enter to select the spot.
       </p>
       {(["front", "back"] as const).map((side) => (
         // Both photographs load once, so changing view is immediate. The source

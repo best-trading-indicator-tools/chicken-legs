@@ -16,7 +16,7 @@ Updated: 21 September 2026.
 | Sponsor benefits | Final winner's temporary logo tattoo on race day; sponsor mentions in public bid history. Previous accepted sponsors remain in that history. |
 | Closing time | 1 November 2026 at 23:59 Europe/Paris, represented as `2026-11-01T22:59:00Z`. |
 | Stripe account | France; customers pay USD, account settles in EUR. |
-| Presentation | Use only `assets/private/V2/vuedefaceV2.png` and `assets/private/V2/vuededosV2.png` for the public front/back photo viewer. Preserve the supplied appearance. Eight clickable sponsorship hotspots; buttons and focused left/right arrows switch views. |
+| Presentation | Use only `assets/private/V2/vuedefaceV2.png` and `assets/private/V2/vuededosV2.png` for the public front/back photo viewer. Preserve the supplied appearance. Eight clickable sponsorship hotspots; Front/Back and arrow buttons switch views. Left/right keyboard shortcuts work while the photo is on screen, without first focusing it, and pause for typing or open dialogs. |
 | Typography | Body copy and form controls use 16px text; compact labels never fall below 14px. Apply the same scale across the whole site, dialogs and mobile layouts. Wrap/reflow content instead of shrinking it. |
 | Roast backstory | Show the supplied `assets/private/Chicken legs roasts 800X800.png` collage directly below the hero, explaining how the comments motivated the runner to show the world how strong his legs are. This 800×800 source replaces the initial 256×256 image. Keep the original private and publish a metadata-free WebP derivative. |
 | Repository | `best-trading-indicator-tools/chicken-legs`; commit and push each completed task directly to `main`, without pull requests. |

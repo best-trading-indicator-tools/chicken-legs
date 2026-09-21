@@ -75,8 +75,8 @@ widths. Photo-viewer checks covered:
 - The exact front/back photo derivatives load uncropped with their original aspect ratio.
 - Four front markers cover quads/ankles; four back markers cover hamstrings/calves.
 - All eight markers and list items select their matching auction and $1,000 checkout.
-- Front/Back buttons and focused left/right arrows change photographs; arrow keys
-  outside the viewer do not change the selected view.
+- Front/Back buttons and focused left/right arrows change photographs. The
+  original focus-only shortcut was subsequently replaced as verified below.
 - Marker positions follow the contained image bounds at each tested viewport.
 - No horizontal overflow; mobile selection and checkout dialogs work.
 - Broken sponsor logos fall back to the brand name; a sponsored fixture retains
@@ -89,6 +89,22 @@ widths. Photo-viewer checks covered:
 
 Desktop front/back and mobile framing were visually reviewed. Reference captures
 and verification scripts are kept locally under `output/playwright/`.
+
+## Photo arrow controls — 21 September 2026
+
+- Left/right keys switch views while the photograph is visible, without first
+  focusing it. Browser checks passed with focus on the page, viewer, Front/Back
+  controls and a placement marker. Switching from a marker preserves focus in
+  the viewer; a keypress switches once and held-key repeats do not cause flicker.
+- Both clickable arrow buttons passed at 1440, 390 and 320px with no horizontal
+  overflow. Mobile controls were visually reviewed in
+  `output/playwright/photo-arrow-controls-*.png`.
+- Native input, textarea, select, range and editable-text fixtures retained normal
+  arrow behavior. All three actual dialogs paused photo shortcuts; caret movement
+  in the sponsorship form worked. Fixtures were removed and the field was cleared.
+- Offscreen photos stayed unchanged. Synthetic modifier/composition and already
+  handled events were ignored without preventing their default behavior.
+- The production build and TypeScript passed. No payment was submitted.
 
 ## Current photo assets
 
