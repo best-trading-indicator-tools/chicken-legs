@@ -16,7 +16,8 @@ Open [localhost:3000](http://localhost:3000). With no database/payment setup,
 the site runs an honest preview: eight empty spots, no fabricated sponsors and
 disabled checkout. Source photos belong in ignored `assets/private/`.
 
-The viewer uses the supplied `frontview.png` and `backview.png` photographs.
+The viewer uses `vuedefaceV2.png` and `vuededosV2.png` from ignored
+`assets/private/V2/`. These replace the earlier front/back photos.
 Click a leg marker or choose from the sponsorship list. Front/Back buttons and
 focused **← / →** keys switch views. Images keep their original composition;
 only resized, metadata-free WebP copies are public.

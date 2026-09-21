@@ -16,7 +16,7 @@ Updated: 21 September 2026.
 | Sponsor benefits | Final winner's temporary logo tattoo on race day; sponsor mentions in public bid history. Previous accepted sponsors remain in that history. |
 | Closing time | 1 November 2026 at 23:59 Europe/Paris, represented as `2026-11-01T22:59:00Z`. |
 | Stripe account | France; customers pay USD, account settles in EUR. |
-| Presentation | Use only `assets/private/frontview.png` and `assets/private/backview.png` for the public front/back photo viewer. Preserve the supplied appearance. Eight clickable sponsorship hotspots; buttons and focused left/right arrows switch views. |
+| Presentation | Use only `assets/private/V2/vuedefaceV2.png` and `assets/private/V2/vuededosV2.png` for the public front/back photo viewer. Preserve the supplied appearance. Eight clickable sponsorship hotspots; buttons and focused left/right arrows switch views. |
 | Repository | `best-trading-indicator-tools/chicken-legs`; commit and push each completed task directly to `main`, without pull requests. |
 
 The user added the two front ankle placements after the original six-spot setup. All eight use the same independent starting-price and takeover rules.
@@ -55,7 +55,7 @@ Complete when: each of the eight photo/list selections opens the correct placeme
 
 ### 3. Photo viewer and tattoo placements
 
-The user rejected the 3D likeness as artificial and chose photographs. The final source selection is **frontview.png and backview.png only**, both in ignored `assets/private/`. The earlier `blender.png` and outdoor reference photos must not be used in the live viewer.
+The user rejected the 3D likeness as artificial and chose photographs. The user supplied replacement V2 images. The current sources are **vuedefaceV2.png and vuededosV2.png**, both in ignored `assets/private/V2/`. They supersede the previous frontview/backview pair. Use these supplied photos directly, preserving the full body and background. Side views are not required for the current front/back interface.
 
 Prepare resized WebP derivatives for the site, preserving composition and appearance and stripping metadata. Keep the original PNGs private. Show the entire photograph without stretching or cropping. Place normalized hotspots on the actual leg positions, accounting for image letterboxing at every viewport size. Anatomical left appears on the viewer's right in the front photo and on the viewer's left in the back photo.
 
@@ -145,7 +145,7 @@ Stripe can leave refunds pending when the available balance is insufficient. Dis
 
 ## Inputs and decisions still needed
 
-- Final presentation sources received: `assets/private/frontview.png` and `assets/private/backview.png`. No additional photos are required for this version.
+- Final presentation sources received: `assets/private/V2/vuedefaceV2.png` and `assets/private/V2/vuededosV2.png`. No additional photos are required for this version.
 - Public name/handle, domain, and support contact. These can remain configurable during the build.
 - The supplied live Stripe key is stored in ignored `.env.local` and passed a read-only account check. Sandbox credentials and webhook setup are still needed for an actual provider round trip. Confirm standard versus IC+ pricing.
 - Branding dimensions/print requirements and sponsor-logo acceptance rules before taking real payments.

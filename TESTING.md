@@ -49,9 +49,10 @@ tracked; source photos and environment credentials remain ignored.
 
 ## Browser checks — current photo viewer
 
-Playwright passed **125 browser assertions**: 36 campaign-page checks and 89
-focused photo-viewer checks. Desktop was checked at 1440×1000; responsive checks
-covered 320, 390 and 768px widths. Checks covered:
+The V2 image replacement passed **89 focused photo-viewer assertions**. The
+36 campaign-page checks were last passed with the sponsor modal update above.
+Desktop was checked at 1440×1000; responsive checks covered 320, 390 and 768px
+widths. Photo-viewer checks covered:
 
 - The exact front/back photo derivatives load uncropped with their original aspect ratio.
 - Four front markers cover quads/ankles; four back markers cover hamstrings/calves.
@@ -63,8 +64,8 @@ covered 320, 390 and 768px widths. Checks covered:
 - Broken sponsor logos fall back to the brand name; a sponsored fixture retains
   the $2,000 takeover price. Browser fixtures were removed after testing.
 - Failed photos hide their markers while the list, checkout and other view remain usable.
-- Rules/checkout dialogs, Escape dismissal, FAQ expansion and disabled preview
-  forms work. The server independently rejects unconfigured checkout.
+- Each placement opens its matching checkout dialog; Escape dismissal and
+  disabled preview payment controls work.
 - Eight honest, empty auction records are returned with no invented sponsors or bids.
 - No canvas, WebGL context or Blender/GLTF downloads; no JavaScript errors.
 
@@ -73,9 +74,12 @@ and verification scripts are kept locally under `output/playwright/`.
 
 ## Current photo assets
 
-- Only `assets/private/frontview.png` and `assets/private/backview.png` were used.
-- Resized WebP derivatives are 967×1600 each: 184,688 bytes front and 192,548 bytes
-  back (377,236 bytes combined). Appearance and composition are preserved.
+- Current sources: `assets/private/V2/vuedefaceV2.png` and
+  `assets/private/V2/vuededosV2.png`, replacing the original front/back pair.
+- Resized WebP derivatives are 918×1600 each: 229,916 bytes front and 200,244 bytes
+  back (430,160 bytes combined). Appearance and composition are preserved.
+- All eight marker positions were realigned to the new poses. Front ankle markers
+  sit on the exposed skin above the socks. No additional side photos are needed.
 - Metadata inspection found no EXIF, XMP or ICC payload in either derivative.
 - Original PNGs and credentials remain excluded from Git.
 - TypeScript and the production build passed after the photo replacement.

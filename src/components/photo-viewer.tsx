@@ -25,22 +25,22 @@ interface Placement {
   labelDirection: "left" | "right";
 }
 
-// Coordinates refer to the complete, uncropped source photographs. Anatomical
+// Coordinates match the complete, uncropped V2 front/back photographs. Anatomical
 // left appears on the right in the front photograph and on the left in the back.
 const placements: Placement[] = [
-  { id: "left-quad", label: "Left quad", shortLabel: "L. QUAD", view: "front", x: 0.630, y: 0.657, labelDirection: "right" },
-  { id: "right-quad", label: "Right quad", shortLabel: "R. QUAD", view: "front", x: 0.438, y: 0.632, labelDirection: "left" },
-  { id: "left-hamstring", label: "Left hamstring", shortLabel: "L. HAMSTRING", view: "back", x: 0.440, y: 0.614, labelDirection: "left" },
-  { id: "right-hamstring", label: "Right hamstring", shortLabel: "R. HAMSTRING", view: "back", x: 0.606, y: 0.622, labelDirection: "right" },
-  { id: "left-calf", label: "Left calf", shortLabel: "L. CALF", view: "back", x: 0.429, y: 0.770, labelDirection: "left" },
-  { id: "right-calf", label: "Right calf", shortLabel: "R. CALF", view: "back", x: 0.633, y: 0.772, labelDirection: "right" },
-  { id: "left-ankle", label: "Left front ankle", shortLabel: "L. ANKLE", view: "front", x: 0.566, y: 0.837, labelDirection: "right" },
-  { id: "right-ankle", label: "Right front ankle", shortLabel: "R. ANKLE", view: "front", x: 0.450, y: 0.836, labelDirection: "left" },
+  { id: "left-quad", label: "Left quad", shortLabel: "L. QUAD", view: "front", x: 0.608, y: 0.608, labelDirection: "right" },
+  { id: "right-quad", label: "Right quad", shortLabel: "R. QUAD", view: "front", x: 0.402, y: 0.608, labelDirection: "left" },
+  { id: "left-hamstring", label: "Left hamstring", shortLabel: "L. HAMSTRING", view: "back", x: 0.402, y: 0.605, labelDirection: "left" },
+  { id: "right-hamstring", label: "Right hamstring", shortLabel: "R. HAMSTRING", view: "back", x: 0.602, y: 0.605, labelDirection: "right" },
+  { id: "left-calf", label: "Left calf", shortLabel: "L. CALF", view: "back", x: 0.365, y: 0.750, labelDirection: "left" },
+  { id: "right-calf", label: "Right calf", shortLabel: "R. CALF", view: "back", x: 0.654, y: 0.750, labelDirection: "right" },
+  { id: "left-ankle", label: "Left front ankle", shortLabel: "L. ANKLE", view: "front", x: 0.670, y: 0.797, labelDirection: "right" },
+  { id: "right-ankle", label: "Right front ankle", shortLabel: "R. ANKLE", view: "front", x: 0.359, y: 0.785, labelDirection: "left" },
 ];
 
 const photographs = {
-  front: { src: "/images/runner-front.webp", width: 967, height: 1600 },
-  back: { src: "/images/runner-back.webp", width: 967, height: 1600 },
+  front: { src: "/images/runner-front.webp", width: 918, height: 1600 },
+  back: { src: "/images/runner-back.webp", width: 918, height: 1600 },
 } as const;
 
 function SponsorshipMarker({ placement, selected, sponsor, onSelect }: {
