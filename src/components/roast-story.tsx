@@ -9,7 +9,6 @@ export default function RoastStory() {
       <p>My coach and chiropractor see a soccer midfielder. The internet sees… chicken legs. And the comment section did not hold back.</p>
       <p>I laughed. Then I got motivated. Now I want to show the world <strong>how strong these legs really are.</strong></p>
       <p>On November 8, I’m putting them to the test at the Nice–Cannes marathon. All 42.195 kilometres. Consider it my very long reply.</p>
-      <div className={styles.punchline}><span aria-hidden="true">🐔</span><span>A running joke.<br /><strong>A very real finish line.</strong></span></div>
       <a className={styles.cta} href="#sponsorships">Be part of the comeback <ArrowUpRight size={18} aria-hidden="true" /></a>
     </div>
     <figure className={styles.evidence}>
