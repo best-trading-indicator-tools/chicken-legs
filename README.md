@@ -21,9 +21,13 @@ Click a leg marker or choose from the sponsorship list. Front/Back buttons and
 focused **← / →** keys switch views. Images keep their original composition;
 only resized, metadata-free WebP copies are public.
 
+**View the Sponsors** opens a list of current sponsors with their zones, linked
+brand names/logos and accepted bid amounts. Previous sponsors stay in the ledger.
+
 ## Project files
 
 - `src/components/campaign-page.tsx` — campaign, sponsorship panel, rules, history and checkout form.
+- `src/components/sponsor-dialog.tsx` — current sponsors, zones and accepted bid amounts.
 - `src/components/photo-viewer.tsx` — front/back photographs and eight responsive placement markers.
 - `public/images/runner-{front,back}.webp` — optimized copies of the two selected photos.
 - `src/lib/campaign.ts` — public campaign dates, currency and permanent slot IDs.
@@ -38,6 +42,16 @@ only resized, metadata-free WebP copies are public.
 
 The earlier Blender scripts, source model and exports remain archived. They are
 not loaded by the campaign page. The photo viewer preserves the supplied likeness.
+
+## Database
+
+The backend uses PostgreSQL through the `pg` driver. It stores accepted bids,
+current sponsors, checkout reservations, refund obligations, webhook events and
+worker jobs. Transactions and row locks coordinate competing bids.
+
+Set `DATABASE_URL` and apply the migrations before connecting a real campaign.
+Without it, `/api/auctions` returns an empty preview and checkout stays disabled.
+There is no SQLite file or browser-only bid database.
 
 ## Payments
 

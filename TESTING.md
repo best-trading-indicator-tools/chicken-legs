@@ -23,6 +23,30 @@ payments or deployment are ready.
   Stripe responses remained simulated. The isolated test cluster was stopped
   after verification and did not change the app's local environment.
 
+## Sponsor-list modal — latest verification
+
+The View the Sponsors button opens a Meet the sponsors dialog. **94 browser
+assertions passed** for this change: 51 sponsor-list checks, 7 keyboard/backdrop
+checks and 36 existing campaign-page checks. TypeScript and the production build
+also passed.
+
+- All eight occupied zones display their sponsor, website, logo/fallback and
+  accepted bid amount, independently of the doubled next takeover price.
+- Unclaimed zones are omitted; no sponsor rows or visitor counts are fabricated.
+- Empty, initial loading and API-error states remain distinct; retry recovers.
+- Desktop and 320/390px mobile views fit without horizontal overflow. Long brand
+  names wrap and the last sponsor remains reachable through the scrollable list.
+- Enter opens the dialog; native modal focus excludes background controls.
+  Escape, close button and backdrop dismiss it and restore focus.
+- Background scrolling locks while open; choosing a spot returns focus to the
+  selected zone. Broken logos preserve the sponsor name and website link.
+- Existing zone selection, rules, checkout dialogs and preview payment blocking
+  continue to work. Browser-only sponsor fixtures were removed after testing.
+
+The original iCloud checkout's stale Git index was synchronized with the already
+published photo commit without changing working files. Code/model assets are
+tracked; source photos and environment credentials remain ignored.
+
 ## Browser checks — current photo viewer
 
 Playwright passed **125 browser assertions**: 36 campaign-page checks and 89

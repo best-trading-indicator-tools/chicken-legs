@@ -160,6 +160,7 @@ Stripe can leave refunds pending when the available balance is insufficient. Dis
 - Verified existing GitHub authentication; no supplied token was used.
 - Initialized this previously empty folder as its own repository on `main`, pointing to the requested GitHub repository, to avoid touching the enclosing unrelated repository.
 - Implemented the Next.js campaign, responsive sponsor selection, bid history, rules/checkout dialogs and interactive sponsorship viewer.
+- Added the View the Sponsors modal: current brands, linked logos/names, zones and accepted amounts, with accessible desktop/mobile states.
 - Implemented PostgreSQL reservations, server-priced Stripe Checkout, signed webhooks, durable job processing, takeover/refund obligations and exact fee conversion.
 - Earlier Blender source and web assets are retained as archived work. The user rejected the reconstructed likeness; the public presentation now uses the exact supplied front/back photographs.
 - Passed 66 tests against an isolated real PostgreSQL server with simulated Stripe responses, plus production build, type checking, browser interaction checks and Khronos GLB validation (zero errors/warnings).

@@ -1,6 +1,8 @@
 'use client';
 
 import PhotoViewer from './photo-viewer';
+import SponsorDialog from './sponsor-dialog';
+import sponsorStyles from './sponsor-dialog.module.css';
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { ArrowRight, ArrowUpRight, Check, ChevronDown, Clock3, Crosshair, Flag, Footprints, History, LockKeyhole, MoveHorizontal, RotateCcw, ShieldCheck, Sparkles, X } from 'lucide-react';
 import { campaign, slots, formatUsd, type AuctionSnapshot } from '@/lib/campaign';
@@ -27,9 +29,12 @@ export default function CampaignPage() {
   const [view, setView] = useState<'front' | 'back'>('front');
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [rulesOpen, setRulesOpen] = useState(false);
+  const [sponsorsOpen, setSponsorsOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [loadError, setLoadError] = useState(false);
+  const [auctionsLoaded, setAuctionsLoaded] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
   const checkoutDialog = useRef<HTMLDialogElement>(null);
   const rulesDialog = useRef<HTMLDialogElement>(null);
@@ -39,12 +44,14 @@ export default function CampaignPage() {
   const available = auctions.slots.filter(slot => !slot.sponsor).length;
 
   const refresh = useCallback(async () => {
+    setRefreshing(true);
     try {
       const response = await fetch('/api/auctions', { cache: 'no-store' });
       if (!response.ok) throw new Error('Unavailable');
       const data = await response.json() as AuctionSnapshot;
-      setAuctions(data); setLoadError(false);
+      setAuctions(data); setLoadError(false); setAuctionsLoaded(true);
     } catch { setLoadError(true); }
+    finally { setRefreshing(false); }
   }, []);
   useEffect(() => { void refresh(); const timer = setInterval(refresh, 15000); return () => clearInterval(timer); }, [refresh]);
   useEffect(() => {
@@ -84,6 +91,13 @@ export default function CampaignPage() {
     if (selected.nextBidCents === null || auctions.closed) return;
     idempotencyKey.current = crypto.randomUUID(); setError(''); setCheckoutOpen(true);
   }
+  function closeSponsorsAndChooseSpot() {
+    setSponsorsOpen(false);
+    requestAnimationFrame(() => {
+      document.getElementById('sponsorships')?.scrollIntoView({ behavior: 'smooth' });
+      document.querySelector<HTMLButtonElement>('.slot-row.selected')?.focus({ preventScroll: true });
+    });
+  }
   async function submitCheckout(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!auctions.paymentsEnabled || auctions.closed || submitting || loadError || selected.nextBidCents === null) return;
@@ -117,6 +131,7 @@ export default function CampaignPage() {
           <h1 id="hero-title"><span className="headline-line">I’M SELLING</span><span className="headline-line">MY <span className="chicken-word">CHICKEN<svg viewBox="0 0 300 12" aria-hidden="true"><path d="M2 8 Q135 -3 297 6 M18 11 Q160 2 280 10" /></svg></span></span><span className="headline-line lime">LEGS.</span><span className="headline-asterisk">✳</span></h1>
           <p className="hero-description">My coach sees a soccer midfielder.<br />The internet sees chicken legs.<br /><strong>I see a business opportunity.</strong></p>
           <a href="#sponsorships" className="primary-button hero-cta">Put your logo on a leg <ArrowUpRight size={19} /></a>
+          <button className={sponsorStyles.trigger} type="button" aria-haspopup="dialog" aria-controls="sponsors-dialog" onClick={() => setSponsorsOpen(true)}>View the Sponsors <ArrowUpRight size={16} /></button>
           <div className="race-ticket"><span className="race-icon"><Footprints size={21} /></span><div><span>NICE <ArrowRight size={11} /> CANNES</span><p>42.195 km. Zero training. <b>08.11.26</b></p></div></div>
           <p className="hero-footnote">Yes, these are real legs.<br />Yes, your logo really goes on them.</p>
         </div>
@@ -152,6 +167,7 @@ export default function CampaignPage() {
     </main>
     <footer className="site-footer"><a className="brand" href="/"><span className="brand-chicken">🐔</span><span>CHICKEN<span className="brand-light">LEGS</span></span></a><span>A RUNNING JOKE. A REAL MARATHON.</span><button onClick={() => setRulesOpen(true)}>Auction & refund rules <ArrowUpRight size={13} /></button></footer>
 
+    <SponsorDialog open={sponsorsOpen} slots={auctions.slots} loading={!auctionsLoaded} loadError={loadError} refreshing={refreshing} onClose={() => setSponsorsOpen(false)} onRetry={refresh} onChooseSpot={closeSponsorsAndChooseSpot} />
     <dialog ref={checkoutDialog} className="checkout-dialog" onCancel={() => setCheckoutOpen(false)} onClose={() => setCheckoutOpen(false)} onClick={event => { if (event.target === event.currentTarget) setCheckoutOpen(false); }} aria-labelledby="checkout-title">
       <div className="dialog-content"><button className="dialog-close" aria-label="Close sponsorship" onClick={() => setCheckoutOpen(false)}><X size={20} /></button><span className="eyebrow">YOUR NEXT BIG BRAND PLACEMENT</span><h2 id="checkout-title">THE {selected.label.toUpperCase()}.</h2><div className="checkout-price"><span>{selected.nextBidCents === null ? 'Unavailable' : formatUsd(selected.nextBidCents)} <small>USD</small></span><span>{selected.sponsor ? 'Take over this spot' : 'Opening sponsorship'}</span></div><div className="checkout-benefits"><span><Check size={14} /> Race-day logo tattoo if you win</span><span><Check size={14} /> Your brand in the bid history</span></div>
         {!auctions.paymentsEnabled && <div className="preview-notice"><Clock3 size={17} /><p>{auctions.mode === 'sandbox' ? 'This is a test checkout. No real money will be charged.' : 'Sponsorships aren’t open yet. You can explore the details here before bidding begins.'}</p></div>}
