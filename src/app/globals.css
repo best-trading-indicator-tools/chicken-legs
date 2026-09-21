@@ -19,3 +19,10 @@
 
 /* Keep the three-line headline proportional to its grid column. */
 .hero-copy{container-type:inline-size}.hero h1{font-size:min(23cqw,97px)}.hero h1 .headline-line{display:block;white-space:nowrap}.hero h1 .headline-asterisk{left:53%;font-size:.54em}
+
+/* Actual front/back photographs keep the runner’s likeness intact. */
+.photo-stage{margin:18px 0 14px;height:568px}.photo-stage + .model-bottomline{padding:0 2px;gap:8px}.photo-stage + .model-bottomline>span{font-size:7px;letter-spacing:.55px}
+@media(min-width:1450px){.photo-stage{height:600px}}
+@media(max-width:1150px){.photo-stage{height:545px}.photo-stage + .model-bottomline>span{font-size:6px;letter-spacing:.3px}}
+@media(max-width:940px){.photo-stage{height:530px}}
+@media(max-width:640px){.photo-stage{height:560px;margin:17px 0 14px}.photo-stage + .model-bottomline>span{font-size:7px;letter-spacing:.5px}}

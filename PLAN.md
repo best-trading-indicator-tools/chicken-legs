@@ -1,6 +1,6 @@
 # Chicken Legs — implementation plan
 
-Status: full-body Blender model, interactive website and auction backend implemented and locally tested. Live checkout remains disabled pending database/webhook/scheduler configuration, real Stripe sandbox verification and remaining launch details.
+Status: public presentation now uses the supplied front/back photographs, with all eight sponsorship spots verified on desktop and mobile. The auction backend remains implemented and locally tested. Live checkout remains disabled pending database/webhook/scheduler configuration, real Stripe sandbox verification and remaining launch details.
 Updated: 21 September 2026.
 
 ## Confirmed brief
@@ -16,7 +16,7 @@ Updated: 21 September 2026.
 | Sponsor benefits | Final winner's temporary logo tattoo on race day; sponsor mentions in public bid history. Previous accepted sponsors remain in that history. |
 | Closing time | 1 November 2026 at 23:59 Europe/Paris, represented as `2026-11-01T22:59:00Z`. |
 | Stripe account | France; customers pay USD, account settles in EUR. |
-| 3D production | Full-body Blender model using supplied photos in `assets/private/`, with very lean, pronounced muscle definition. Mouse drag and keyboard arrows rotate the model. |
+| Presentation | Use only `assets/private/frontview.png` and `assets/private/backview.png` for the public front/back photo viewer. Preserve the supplied appearance. Eight clickable sponsorship hotspots; buttons and focused left/right arrows switch views. |
 | Repository | `best-trading-indicator-tools/chicken-legs`; commit and push each completed task directly to `main`, without pull requests. |
 
 The user added the two front ankle placements after the original six-spot setup. All eight use the same independent starting-price and takeover rules.
@@ -35,7 +35,7 @@ The [official event website](https://www.marathon06.com/2026/) confirms the even
 
 ### 1. Project foundation and rules
 
-Use Next.js with TypeScript for the website and server endpoints, PostgreSQL for auctions, object storage for public approved assets, and a durable database job queue for payment reconciliation/refunds. Use Three.js / React Three Fiber for the browser model. Hosting proposal: Vercel plus managed PostgreSQL/storage, selected before deployment.
+Use Next.js with TypeScript for the website and server endpoints, PostgreSQL for auctions, object storage for public approved assets, and a durable database job queue for payment reconciliation/refunds. Use a lightweight React photo viewer for the public presentation. Earlier Blender assets remain archived in the repository and are not loaded by the campaign page. Hosting proposal: Vercel plus managed PostgreSQL/storage, selected before deployment.
 
 Create a runnable local app, isolated test configuration, database migrations, campaign configuration, and an example environment file containing placeholders only. Make the eight slot IDs permanent. Store money in integer minor units and calculate every price on the server. Store time in UTC and display the Paris timezone explicitly.
 
@@ -43,7 +43,7 @@ Complete when: local app starts, migrations create exactly eight slots, and test
 
 ### 2. Website and sponsor journey
 
-Build the desktop and mobile page with the campaign story, race date, deadline countdown, rotatable legs, front/back controls, eight matching accessible placement buttons, current sponsor/price, next takeover price, and an expandable bid history.
+Build the desktop and mobile page with the campaign story, race date, deadline countdown, actual front/back photographs, view controls, eight matching accessible placement buttons, current sponsor/price, next takeover price, and an expandable bid history.
 
 Flow: choose a spot → review amount and takeover/refund terms → enter sponsor name, website, email and logo → pay through Stripe-hosted Checkout → return to a payment-status page. Display a pending state until the server verifies payment. Cancellation or decline leaves the current sponsor in place.
 
@@ -51,17 +51,17 @@ Keep all previously accepted sponsors in history with brand name, placement, amo
 
 Provide secure sponsor management for logo/link edits before branding closes. Validate uploaded files and website URLs. Stop branding edits at the deadline, then reconcile outstanding pre-cutoff payments before freezing the final winning artwork. Add a small authenticated administration page for current sponsors, jobs needing attention, refund status, campaign pause, and tattoo artwork export.
 
-Complete when: each of the eight model/list selections opens the correct placement; forms, history and pending/cancelled states work on desktop and mobile; keyboard users can complete the same journey.
+Complete when: each of the eight photo/list selections opens the correct placement; forms, history and pending/cancelled states work on desktop and mobile; keyboard users can complete the same journey.
 
-### 3. Blender model and tattoo placements
+### 3. Photo viewer and tattoo placements
 
-Inspect the supplied references before choosing reconstruction versus a reference-based sculpt. Blender is not an automatic guarantee of a faithful scan from arbitrary photos. Produce a reviewable front/back/side model before optimizing.
+The user rejected the 3D likeness as artificial and chose photographs. The final source selection is **frontview.png and backview.png only**, both in ignored `assets/private/`. The earlier `blender.png` and outdoor reference photos must not be used in the live viewer.
 
-Author a full-body model with separate named placement anchors for all eight leg regions. Use the supplied torso/face and leg photos, emphasizing extremely lean muscle definition as requested. Mouse drag and focused keyboard arrow controls rotate the whole figure. Use replaceable logo patches/decal meshes so a new sponsor does not require rebuilding the model. Maintain correct anatomical left/right and check how shorts/socks affect actual tattoo space.
+Prepare resized WebP derivatives for the site, preserving composition and appearance and stripping metadata. Keep the original PNGs private. Show the entire photograph without stretching or cropping. Place normalized hotspots on the actual leg positions, accounting for image letterboxing at every viewport size. Anatomical left appears on the viewer's right in the front photo and on the viewer's left in the back photo.
 
-Deliver an editable `.blend`, optimized `.glb`, textures, placement metadata, and static front/back fallback renders. Initial budgets: roughly 30–60k triangles and a GLB below 5 MB, adjusted after phone testing. Load 3D progressively; sponsorship remains usable if WebGL fails.
+Front exposes quads and front ankles; back exposes hamstrings and calves. All eight remain independent auctions. Selection updates the same sponsorship action and checkout. Preserve sponsor logo/name badges, keyboard access, front/back buttons, and a usable sponsorship list if an image fails. Do not describe photo switching as 3D rotation.
 
-Complete when: the runner's proportions match the supplied references, all eight tattoos remain legible without clipping, front/back switching works, and the site performs acceptably on a phone.
+Complete when: both exact supplied views load on desktop/mobile, hotspots align with the visible skin, all eight selections open the correct auction, and no WebGL/model assets are requested.
 
 ### 4. Payment, takeover and refund engine
 
@@ -95,14 +95,14 @@ Test the rules, database transactions, background workers, and real sandbox Chec
 | Refunds | One per takeover; API timeout after successful submission; pending for insufficient balance; failure and retry; prior partial refund; disputed charge. |
 | Deadline | Before, at and after cutoff; Paris-to-UTC conversion; checkout already open; delayed notification of pre-cutoff payment; branding freeze. |
 | Interface | All eight placements; front/back; small screen; touch; keyboard; logo validation; empty/history/sold states; no personal billing data in public responses. |
-| 3D | Left/right correctness; decal clipping; loading; reduced motion; WebGL failure; slow network and fallback. |
+| Photos | Correct supplied images; anatomical left/right; hotspot alignment; loading/failure; keyboard view changes; mobile; no model downloads. |
 | Administration | Unauthorized access denied; refund visibility; job recovery; audit trail; final artwork export. |
 
 Maintain a test report distinguishing passed checks, simulated fixtures and tests requiring Stripe credentials. A sandbox does not prove real card settlement timings or live FX costs. No live charge is part of automatic testing.
 
 ### 6. Deployment and final campaign assets
 
-After the tested build and final model are reviewable, configure the selected host, database, storage, domain, HTTPS, production secrets, signed webhook endpoint and scheduled worker. Verify monitoring and reconciliation on the deployed app. Enable real payments only with live configuration and resolved launch details. When repository publication is requested, commit and push directly to `main`.
+After the tested build and final photos are reviewable, configure the selected host, database, storage, domain, HTTPS, production secrets, signed webhook endpoint and scheduled worker. Verify monitoring and reconciliation on the deployed app. Enable real payments only with live configuration and resolved launch details. When repository publication is requested, commit and push directly to `main`.
 
 At closing, produce the eight winning logos with placement names and agreed print dimensions. Keep the public sponsor history available after the auction closes. The site should retain the race story without claiming a finish or result before it occurs.
 
@@ -145,7 +145,7 @@ Stripe can leave refunds pending when the available balance is insufficient. Dis
 
 ## Inputs and decisions still needed
 
-- Source media received: five supplied images in ignored `assets/private/`, including torso/face, front/back and leg references. The Blender model uses these references; no further photos are required for this version.
+- Final presentation sources received: `assets/private/frontview.png` and `assets/private/backview.png`. No additional photos are required for this version.
 - Public name/handle, domain, and support contact. These can remain configurable during the build.
 - The supplied live Stripe key is stored in ignored `.env.local` and passed a read-only account check. Sandbox credentials and webhook setup are still needed for an actual provider round trip. Confirm standard versus IC+ pricing.
 - Branding dimensions/print requirements and sponsor-logo acceptance rules before taking real payments.
@@ -159,9 +159,9 @@ Stripe can leave refunds pending when the available balance is insufficient. Dis
 - Researched Stripe keys, fee retrieval, FX, refunds, Checkout reservation expiry, webhooks and idempotency.
 - Verified existing GitHub authentication; no supplied token was used.
 - Initialized this previously empty folder as its own repository on `main`, pointing to the requested GitHub repository, to avoid touching the enclosing unrelated repository.
-- Implemented the Next.js campaign, responsive sponsor selection, bid history, rules/checkout dialogs and mouse/keyboard-controlled full-body viewer.
+- Implemented the Next.js campaign, responsive sponsor selection, bid history, rules/checkout dialogs and interactive sponsorship viewer.
 - Implemented PostgreSQL reservations, server-priced Stripe Checkout, signed webhooks, durable job processing, takeover/refund obligations and exact fee conversion.
-- Built and visually reviewed the full-body Blender source, 3.61 MB optimized GLB, eight anchors and front/back fallback renders. Source media remains private. The figure is an artistic interpretation, not a scan.
+- Earlier Blender source and web assets are retained as archived work. The user rejected the reconstructed likeness; the public presentation now uses the exact supplied front/back photographs.
 - Passed 66 tests against an isolated real PostgreSQL server with simulated Stripe responses, plus production build, type checking, browser interaction checks and Khronos GLB validation (zero errors/warnings).
 - Committed and pushed completed tasks directly to `main` as requested. No PRs and no deployment yet.
 

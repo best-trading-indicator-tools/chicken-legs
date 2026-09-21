@@ -1,6 +1,6 @@
 # Chicken Legs
 
-A 3D sponsorship site for the full Nice–Cannes marathon on **8 November 2026**.
+An interactive photo sponsorship site for the full Nice–Cannes marathon on **8 November 2026**.
 Eight independent leg placements start at **$1,000 USD**. Each takeover doubles
 the price. Bidding closes **1 November 2026, 23:59 Europe/Paris**.
 
@@ -16,15 +16,16 @@ Open [localhost:3000](http://localhost:3000). With no database/payment setup,
 the site runs an honest preview: eight empty spots, no fabricated sponsors and
 disabled checkout. Source photos belong in ignored `assets/private/`.
 
-The full-body model rotates by mouse/touch drag. Focus the viewer and use
-**← / →** to turn and **↑ / ↓** to tilt. Front/Back buttons and the eight
-placement buttons provide an accessible alternative. Reduced motion and a
-static front/back fallback are supported.
+The viewer uses the supplied `frontview.png` and `backview.png` photographs.
+Click a leg marker or choose from the sponsorship list. Front/Back buttons and
+focused **← / →** keys switch views. Images keep their original composition;
+only resized, metadata-free WebP copies are public.
 
 ## Project files
 
 - `src/components/campaign-page.tsx` — campaign, sponsorship panel, rules, history and checkout form.
-- `src/components/leg-viewer.tsx` — interactive full-body model and eight placement anchors.
+- `src/components/photo-viewer.tsx` — front/back photographs and eight responsive placement markers.
+- `public/images/runner-{front,back}.webp` — optimized copies of the two selected photos.
 - `src/lib/campaign.ts` — public campaign dates, currency and permanent slot IDs.
 - `src/lib/auctions.ts` — transactional reservation and server-priced Checkout.
 - `src/lib/payment-worker.ts` — verified acceptance, takeovers, refund obligations and reconciliation.
@@ -35,8 +36,8 @@ static front/back fallback are supported.
 - `public/models/chicken-legs.glb` — web model; metadata in `placements.json`.
 - `public/images/legs-{front,back,preview}.png` — Blender renders and browser fallbacks.
 
-The character is a reference-informed sculpt, emphasizing the runner's lean,
-muscular appearance. It is not a photogrammetry scan or an exact facial reconstruction.
+The earlier Blender scripts, source model and exports remain archived. They are
+not loaded by the campaign page. The photo viewer preserves the supplied likeness.
 
 ## Payments
 

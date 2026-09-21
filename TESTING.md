@@ -23,32 +23,45 @@ payments or deployment are ready.
   Stripe responses remained simulated. The isolated test cluster was stopped
   after verification and did not change the app's local environment.
 
-## Browser checks
+## Browser checks — current photo viewer
 
-Playwright checked the site at 1440×1000 and 390×844; all **36 page assertions
-passed**, plus **18 focused ankle/viewer assertions**. Checks covered:
+Playwright passed **125 browser assertions**: 36 campaign-page checks and 89
+focused photo-viewer checks. Desktop was checked at 1440×1000; responsive checks
+covered 320, 390 and 768px widths. Checks covered:
 
-- Each of the eight list items selects the correct placement and front/back view.
-- Selection changes the sponsorship action and checkout heading.
-- Checkout and rules dialogs open/close; Escape closes checkout.
-- A completed preview form still cannot submit a financial payment.
-- The public API returns eight unclaimed $1,000 spots with no invented bids.
-- The server rejects unconfigured checkout independently of the browser.
-- FAQ expansion works and mobile has no horizontal overflow.
-- Mouse dragging rotates the model; focused left/right arrows turn and up/down
-  arrows tilt. Arrow keys outside the viewer retain normal page behavior.
-- Front displays quad and ankle hotspots; rotating to the back exposes
-  hamstrings/calves and hides the front ankles.
-- Sponsor logo badges select their actual slot; broken logo images fall back
-  to the sponsor name. Browser-only fixtures were removed after testing.
-- Both ankle hotspots select the correct auction and open its checkout dialog.
-- WebGL context-loss fallback preserves front/back images and both ankle selections.
+- The exact front/back photo derivatives load uncropped with their original aspect ratio.
+- Four front markers cover quads/ankles; four back markers cover hamstrings/calves.
+- All eight markers and list items select their matching auction and $1,000 checkout.
+- Front/Back buttons and focused left/right arrows change photographs; arrow keys
+  outside the viewer do not change the selected view.
+- Marker positions follow the contained image bounds at each tested viewport.
+- No horizontal overflow; mobile selection and checkout dialogs work.
+- Broken sponsor logos fall back to the brand name; a sponsored fixture retains
+  the $2,000 takeover price. Browser fixtures were removed after testing.
+- Failed photos hide their markers while the list, checkout and other view remain usable.
+- Rules/checkout dialogs, Escape dismissal, FAQ expansion and disabled preview
+  forms work. The server independently rejects unconfigured checkout.
+- Eight honest, empty auction records are returned with no invented sponsors or bids.
+- No canvas, WebGL context or Blender/GLTF downloads; no JavaScript errors.
 
-Final full-body desktop/mobile framing and fallback verification passed.
-Reference captures and browser screenshots are kept locally under
-`output/playwright/`.
+Desktop front/back and mobile framing were visually reviewed. Reference captures
+and verification scripts are kept locally under `output/playwright/`.
 
-## Blender asset
+## Current photo assets
+
+- Only `assets/private/frontview.png` and `assets/private/backview.png` were used.
+- Resized WebP derivatives are 967×1600 each: 184,688 bytes front and 192,548 bytes
+  back (377,236 bytes combined). Appearance and composition are preserved.
+- Metadata inspection found no EXIF, XMP or ICC payload in either derivative.
+- Original PNGs and credentials remain excluded from Git.
+- TypeScript and the production build passed after the photo replacement.
+- Verification ran in a clean local checkout because iCloud offloaded files in
+  the working folder. Payment code did not change; the earlier backend test
+  results above remain the recorded backend verification.
+
+## Archived Blender asset — earlier verification
+
+The user rejected this likeness. These assets are no longer loaded by the campaign page.
 
 - Full-body source and 960×1280 front/back/oblique renders visually reviewed.
 - Editable Blender source plus optimized 3,606,924-byte GLB.
