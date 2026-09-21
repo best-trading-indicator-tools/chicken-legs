@@ -3,13 +3,14 @@ import { readFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { PGlite, type Transaction } from "@electric-sql/pglite";
 import type Stripe from "stripe";
-import type { Pool, PoolClient } from "pg";
+import { Pool, type PoolClient } from "pg";
 
 vi.mock("server-only", () => ({}));
 const state = vi.hoisted(() => ({ engine: undefined as unknown as PGlite, stripe: undefined as unknown as Stripe }));
 
 vi.mock("../src/lib/db", async (original) => {
   const actual = await original<typeof import("../src/lib/db")>();
+  if (process.env.TEST_DATABASE_URL) return actual;
   function adapter(target: PGlite | Transaction) {
     return {
       query: async (sql: string, params?: unknown[]) => {
@@ -46,6 +47,11 @@ let idempotency: Map<string, string>;
 let loseSessionResponse = false;
 let loseRefundResponse = false;
 const fake = <T>(value: unknown): T => value as T;
+const testUrl = process.env.TEST_DATABASE_URL;
+const testSchema = testUrl ? `service_test_${randomUUID().replaceAll("-", "")}` : "public";
+let servicePool: Pool | undefined;
+let directPool: Pool | undefined;
+let serviceDatabaseUrl = "postgres://embedded-test-only";
 
 function mockStripe() {
   sessions = new Map(); intents = new Map(); refunds = new Map(); idempotency = new Map();
@@ -106,10 +112,31 @@ async function pay(session: Stripe.Checkout.Session, timestamp = Math.floor(Date
   return event;
 }
 
-beforeAll(async () => { state.engine = new PGlite(); await state.engine.waitReady; }, 60_000);
-afterAll(async () => { await state.engine.close(); }, 30_000);
+beforeAll(async () => {
+  if (!testUrl) { state.engine = new PGlite(); await state.engine.waitReady; return; }
+  const url = new URL(testUrl);
+  url.searchParams.set("options", `-c search_path=${testSchema}`);
+  serviceDatabaseUrl = url.toString();
+  directPool = new Pool({ connectionString: serviceDatabaseUrl });
+  await directPool.query(`CREATE SCHEMA ${testSchema}`);
+  vi.stubEnv("DATABASE_URL", serviceDatabaseUrl);
+  servicePool = (await import("../src/lib/db")).db();
+  state.engine = fake<PGlite>({
+    query: async (sql: string, params?: unknown[]) => {
+      const result = await directPool!.query(sql, params);
+      return { rows: result.rows, affectedRows: result.rowCount };
+    },
+    exec: (sql: string) => directPool!.query(sql),
+    close: async () => {},
+  });
+}, 60_000);
+afterAll(async () => {
+  if (servicePool) await servicePool.end();
+  if (directPool) { await directPool.query(`DROP SCHEMA IF EXISTS ${testSchema} CASCADE`); await directPool.end(); }
+  else await state.engine.close();
+}, 30_000);
 beforeEach(async () => {
-  vi.stubEnv("DATABASE_URL", "postgres://embedded-test-only");
+  vi.stubEnv("DATABASE_URL", serviceDatabaseUrl);
   vi.stubEnv("APP_URL", "https://chicken.example.com");
   vi.stubEnv("CHECKOUT_ENABLED", "true");
   vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_fake_no_network");
@@ -117,12 +144,12 @@ beforeEach(async () => {
   vi.stubEnv("WORKER_SECRET", "test-only-worker-secret-32-characters");
   vi.stubEnv("STRIPE_PRICING_MODEL", "standard");
   state.stripe = mockStripe(); loseSessionResponse = false; loseRefundResponse = false;
-  await state.engine.exec("DROP SCHEMA public CASCADE; CREATE SCHEMA public;");
+  await state.engine.exec(`DROP SCHEMA ${testSchema} CASCADE; CREATE SCHEMA ${testSchema};`);
   await state.engine.exec(await readFile(new URL("../database/001_auctions.sql", import.meta.url), "utf8"));
 });
 afterEach(() => { vi.unstubAllEnvs(); vi.clearAllMocks(); });
 
-describe("durable auction integration (embedded PostgreSQL, mocked Stripe)", () => {
+describe(`durable auction integration (${testUrl ? "multi-connection PostgreSQL" : "embedded PostgreSQL"}, mocked Stripe)`, () => {
   it("accepts $1K → $2K → $4K with exactly one original-fee refund per takeover", async () => {
     for (const name of ["One", "Two", "Three"]) {
       await createCheckout(input(name), randomUUID(), name);
