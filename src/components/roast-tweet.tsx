@@ -26,7 +26,7 @@ type TwitterWindow = Window & {
   twttr?: {
     widgets: {
       createTweet: (id: string, target: HTMLElement, options: {
-        theme: 'dark'; cards: 'hidden'; conversation: 'none'; dnt: boolean; lang: string;
+        theme: 'dark'; cards: 'visible'; conversation: 'none'; dnt: boolean; lang: string;
       }) => Promise<HTMLElement | undefined>;
     };
   };
@@ -47,7 +47,7 @@ function RoastTweet({ post, scriptReady }: { post: typeof posts[number]; scriptR
     target.appendChild(mount);
     let cancelled = false;
     widgets.createTweet(post.id, mount, {
-      theme: 'dark', cards: 'hidden', conversation: 'none', dnt: true, lang: 'en',
+      theme: 'dark', cards: 'visible', conversation: 'none', dnt: true, lang: 'en',
     }).then(element => {
       if (!cancelled && element) setLoaded(true);
     }).catch(() => {
