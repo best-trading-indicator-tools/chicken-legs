@@ -46,6 +46,21 @@
       "height": 0.14,
       "view": "back"
     },
+    "left_ankle": {
+      "position": [
+        0.2622,
+        0.506,
+        0.0839
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "width": 0.095,
+      "height": 0.1,
+      "view": "front"
+    },
     "right_quad": {
       "position": [
         -0.23142,
@@ -90,6 +105,21 @@
       "width": 0.125,
       "height": 0.14,
       "view": "back"
+    },
+    "right_ankle": {
+      "position": [
+        -0.2622,
+        0.506,
+        0.0839
+      ],
+      "normal": [
+        -0.0,
+        0.0,
+        1.0
+      ],
+      "width": 0.095,
+      "height": 0.1,
+      "view": "front"
     }
   }
 }

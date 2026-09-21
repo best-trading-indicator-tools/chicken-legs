@@ -1,4 +1,4 @@
-"""Check shipped GLB structure, geometry limits, and six permanent sponsor anchors."""
+"""Check shipped GLB structure, geometry limits, and eight permanent sponsor anchors."""
 import json, math, struct, itertools, sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
@@ -9,15 +9,27 @@ assert magic==0x46546c67 and version==2 and length==len(b),'Invalid GLB header'
 size,kind=struct.unpack_from('<II',b,12)
 assert kind==0x4E4F534A
 j=json.loads(b[20:20+size]);nodes=j['nodes'];accessors=j['accessors']
-required={side+'_'+part for side in ('left','right') for part in ('quad','hamstring','calf')}
+required={side+'_'+part for side in ('left','right') for part in ('quad','hamstring','calf','ankle')}
 anchors={n['name']:n for n in nodes if n.get('name') in required}
 assert anchors.keys()==required,'Missing permanent sponsor anchors'
+metadata=json.loads((ROOT/'public/models/placements.json').read_text())
+assert metadata==json.loads((ROOT/'assets/model/placements.json').read_text()),'Source/browser placements differ'
+assert metadata['placements'].keys()==required,'Placement metadata must match all eight anchors'
 for name,node in anchors.items():
     assert node.get('extras',{}).get('placement_id')==name
     pos=node.get('translation',[0,0,0]);assert all(math.isfinite(x) for x in pos)
     assert .4<pos[1]<1.7,f'Anchor {name} outside expected leg height'
     assert (pos[0]>0)==name.startswith('left'),'Anatomical left/right reversed'
-    assert (pos[2]>0)==name.endswith('quad'),'Front/back anchor reversed'
+    front=name.endswith(('quad','ankle'))
+    assert (pos[2]>0)==front,'Front/back anchor reversed'
+    placement=metadata['placements'][name]
+    assert all(abs(a-b)<.00001 for a,b in zip(pos,placement['position'])),f'{name} metadata does not match GLB'
+    assert placement['view']==('front' if front else 'back'),f'{name} view is incorrect'
+    assert (placement['normal'][2]>0)==front,f'{name} normal is reversed'
+    assert placement['width']>0 and placement['height']>0,'Invalid decal dimensions'
+    if name.endswith('ankle'):
+        assert pos[1]-placement['height']/2>.44-.009,'Ankle decal overlaps sock cuff'
+        assert .48<pos[1]<.54,'Ankle decal must sit just above the sock'
 triangles=sum(accessors[p['indices']]['count']//3 for m in j['meshes'] for p in m['primitives'])
 assert triangles<150000,f'Geometry budget exceeded: {triangles}'
 assert len(b)<6_000_000,f'GLB size budget exceeded: {len(b)}'

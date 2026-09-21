@@ -1,13 +1,15 @@
 {
   "file": "public/models/chicken-legs.glb",
-  "bytes": 3606432,
+  "bytes": 3606924,
   "triangles": 109515,
   "mesh_count": 19,
   "materials": 19,
   "anchors": [
+    "left_ankle",
     "left_calf",
     "left_hamstring",
     "left_quad",
+    "right_ankle",
     "right_calf",
     "right_hamstring",
     "right_quad"

@@ -19,14 +19,14 @@ beforeEach(() => {
 afterEach(() => { vi.unstubAllEnvs(); vi.clearAllMocks(); });
 
 describe("preview API and payment boundaries", () => {
-  it("returns six empty placements with no fictional sponsors or revenue", async () => {
+  it("returns eight empty placements with no fictional sponsors or revenue", async () => {
     const response = await auctions();
     const body = await response.json();
     expect(response.status).toBe(200);
     expect(body.mode).toBe("preview");
     expect(body.paymentsEnabled).toBe(false);
     expect(body.currentTotalCents).toBe(0);
-    expect(body.slots).toHaveLength(6);
+    expect(body.slots).toHaveLength(8);
     for (const slot of body.slots) {
       expect(slot.sponsor).toBeNull();
       expect(slot.history).toEqual([]);

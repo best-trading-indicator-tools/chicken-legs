@@ -272,13 +272,14 @@ exec(compile((ROOT/'scripts/blender/add_upper_body.py').read_text(),str(ROOT/'sc
 # Sponsor anchor transforms, plus useful patch dimensions for browser decals.
 placements={}
 for side,s in [('left',1),('right',-1)]:
-    for region,z,t,w,h in [('quad',1.38,.02,.155,.20),('hamstring',1.38,pi,.145,.20),('calf',.74,pi,.125,.14)]:
+    # Front ankle tattoos sit above the .44-high sock cuff, entirely on skin.
+    for region,z,t,w,h in [('quad',1.38,.02,.155,.20),('hamstring',1.38,pi,.145,.20),('calf',.74,pi,.125,.14),('ankle',.515,0,.095,.10)]:
         name=side+'_'+region;pos=legpoint(z,t,s,.008)
         normal=Vector((s*sin(t),-cos(t),0)).normalized()
         empty=bpy.data.objects.new(name,None);anchors.objects.link(empty);empty.location=pos;empty.empty_display_type='PLAIN_AXES';empty.empty_display_size=.045
         empty.rotation_euler=normal.to_track_quat('Z','Y').to_euler()
         empty['placement_id']=name;empty['width']=w;empty['height']=h;empty['anatomical_side']=side
-        placements[name]={'position':[round(pos[0],5),round(pos[2],5),round(-pos[1],5)],'normal':[round(normal.x,5),round(normal.z,5),round(-normal.y,5)],'width':w,'height':h,'view':'front' if region=='quad' else 'back'}
+        placements[name]={'position':[round(pos[0],5),round(pos[2],5),round(-pos[1],5)],'normal':[round(normal.x,5),round(normal.z,5),round(-normal.y,5)],'width':w,'height':h,'view':'front' if region in ('quad','ankle') else 'back'}
 (OUT/'placements.json').write_text(json.dumps({'coordinateSystem':'glTF, Y-up, front +Z, anatomical left +X','placements':placements},indent=2)+'\n')
 (WEB/'placements.json').write_text((OUT/'placements.json').read_text())
 # Convert thin curves for portable glTF. Editable source curves remain in the .blend.
@@ -343,5 +344,5 @@ for dest in (OUT/'placements.json',WEB/'placements.json'):dest.write_text(json.d
 if '--export-only' not in sys.argv:
     for name,loc in [('legs-preview',(2.6,-7,2.8)),('legs-front',(0,-7,2.25)),('legs-back',(0,7,2.25))]:
         camera_at(loc);scene.render.filepath=str(IMG/(name+'.png'));bpy.ops.render.render(write_still=True)
-print('DONE: Blender sculpt, GLB, six anchors, and three views exported.')
+print('DONE: Blender sculpt, GLB, eight anchors, and placement metadata exported.')
 print(json.dumps(placements,indent=2))

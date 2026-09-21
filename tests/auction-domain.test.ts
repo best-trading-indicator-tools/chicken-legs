@@ -3,10 +3,14 @@ import { campaign, slots } from "../src/lib/campaign";
 import { assertOpen, checkoutSchema, isClosed, nextBidCents, paymentDecision, refundAfterFees, safePublicUrl, type FeeEvidence, type PaymentEvidence } from "../src/lib/auction-domain";
 
 describe("campaign and pricing", () => {
-  it("has six independent permanent anatomical slots", () => {
-    expect(new Set(slots.map((s) => s.id)).size).toBe(6);
-    expect(slots.filter((s) => s.side === "left")).toHaveLength(3);
-    expect(slots.filter((s) => s.side === "right")).toHaveLength(3);
+  it("has eight independent permanent anatomical slots including two front ankles", () => {
+    expect(new Set(slots.map((s) => s.id)).size).toBe(8);
+    expect(slots.filter((s) => s.side === "left")).toHaveLength(4);
+    expect(slots.filter((s) => s.side === "right")).toHaveLength(4);
+    expect(slots.filter((s) => s.muscle === "ankle")).toEqual([
+      { id: "left-ankle", label: "Left front ankle", muscle: "ankle", side: "left", view: "front" },
+      { id: "right-ankle", label: "Right front ankle", muscle: "ankle", side: "right", view: "front" },
+    ]);
   });
   it("starts at $1,000 and exactly doubles each accepted bid", () => {
     expect([0, 100_000, 200_000, 400_000].map(nextBidCents)).toEqual([100_000, 200_000, 400_000, 800_000]);
@@ -54,6 +58,7 @@ describe("original Stripe fee and FX policy", () => {
 describe("checkout validation", () => {
   const input = { slotId: "left-quad", sponsorName: "Example", email: "sponsor@example.com", website: "https://example.com", termsAccepted: true };
   it("accepts the disclosed fixed-currency request", () => expect(checkoutSchema.parse(input).slotId).toBe("left-quad"));
+  it.each(["left-ankle", "right-ankle"])("accepts checkout for %s", (slotId) => expect(checkoutSchema.parse({ ...input, slotId }).slotId).toBe(slotId));
   it.each([{ amount: 1 }, { currency: "eur" }, { termsAccepted: false }, { slotId: "left-arm" }, { sponsorName: "<script>" }])("rejects client-side tampering: %j", (change) => expect(checkoutSchema.safeParse({ ...input, ...change }).success).toBe(false));
   it.each(["javascript:alert(1)", "http://example.com", "https://localhost", "https://127.0.0.1", "https://10.0.0.1", "https://foo.local", "https://user:password@example.com", "https://example.com:8443"]) ("rejects unsafe public URL %s", (url) => expect(safePublicUrl(url)).toBe(false));
 });

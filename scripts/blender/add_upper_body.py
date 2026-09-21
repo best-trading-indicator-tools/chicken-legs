@@ -46,7 +46,7 @@ SCALE=.210;SHIFT=1.58
 
 def transform(v):return (float(v[0])*SCALE,-float(v[2])*SCALE,float(v[1])*SCALE+SHIFT)
 # Retain torso/head/arms, removing the base legs hidden under shorts. Anatomical
-# leg sculpture authored in build_legs.py stays in place with its six anchors.
+# leg sculpture authored in build_legs.py stays in place with its eight anchors.
 faces=[];fuv=[];used=set()
 for g,idxs,uvs in allfaces:
     if g!='body':continue

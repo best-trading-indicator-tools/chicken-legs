@@ -9,7 +9,7 @@ Updated: 21 September 2026.
 | --- | --- |
 | Campaign | “I'm selling my chicken legs.” Personal coach/chiropractor versus the internet; put the legs to the test. |
 | Event | Full 42.195 km Marathon des Alpes-Maritimes Nice–Cannes, Sunday 8 November 2026. |
-| Placements | Six independent auctions: left/right quad, left/right hamstring, left/right calf. Left/right refers to the runner's body. |
+| Placements | Eight independent auctions: left/right quad, left/right hamstring, left/right calf, left/right front ankle. Left/right refers to the runner's body. |
 | Starting price | USD $1,000 for each unclaimed placement. |
 | Takeovers | Exactly double the last accepted payment: $1,000 → $2,000 → $4,000 → $8,000. |
 | Outbid sponsor | Automatically refunded minus the original recorded Stripe fee, with the USD/EUR treatment described below. |
@@ -18,6 +18,8 @@ Updated: 21 September 2026.
 | Stripe account | France; customers pay USD, account settles in EUR. |
 | 3D production | Full-body Blender model using supplied photos in `assets/private/`, with very lean, pronounced muscle definition. Mouse drag and keyboard arrows rotate the model. |
 | Repository | `best-trading-indicator-tools/chicken-legs`; commit and push each completed task directly to `main`, without pull requests. |
+
+The user added the two front ankle placements after the original six-spot setup. All eight use the same independent starting-price and takeover rules.
 
 The earlier “semi-marathon” wording is superseded by the confirmed full marathon. Do not invent follower counts, social-post promises, bids, sponsor logos, visitor numbers, or race results.
 
@@ -35,31 +37,31 @@ The [official event website](https://www.marathon06.com/2026/) confirms the even
 
 Use Next.js with TypeScript for the website and server endpoints, PostgreSQL for auctions, object storage for public approved assets, and a durable database job queue for payment reconciliation/refunds. Use Three.js / React Three Fiber for the browser model. Hosting proposal: Vercel plus managed PostgreSQL/storage, selected before deployment.
 
-Create a runnable local app, isolated test configuration, database migrations, campaign configuration, and an example environment file containing placeholders only. Make the six slot IDs permanent. Store money in integer minor units and calculate every price on the server. Store time in UTC and display the Paris timezone explicitly.
+Create a runnable local app, isolated test configuration, database migrations, campaign configuration, and an example environment file containing placeholders only. Make the eight slot IDs permanent. Store money in integer minor units and calculate every price on the server. Store time in UTC and display the Paris timezone explicitly.
 
-Complete when: local app starts, migrations create exactly six slots, and tests verify price doubling, currency enforcement, and the cutoff.
+Complete when: local app starts, migrations create exactly eight slots, and tests verify price doubling, currency enforcement, and the cutoff.
 
 ### 2. Website and sponsor journey
 
-Build the desktop and mobile page with the campaign story, race date, deadline countdown, rotatable legs, front/back controls, six matching accessible placement buttons, current sponsor/price, next takeover price, and an expandable bid history.
+Build the desktop and mobile page with the campaign story, race date, deadline countdown, rotatable legs, front/back controls, eight matching accessible placement buttons, current sponsor/price, next takeover price, and an expandable bid history.
 
-Flow: choose a muscle → review amount and takeover/refund terms → enter sponsor name, website, email and logo → pay through Stripe-hosted Checkout → return to a payment-status page. Display a pending state until the server verifies payment. Cancellation or decline leaves the current sponsor in place.
+Flow: choose a spot → review amount and takeover/refund terms → enter sponsor name, website, email and logo → pay through Stripe-hosted Checkout → return to a payment-status page. Display a pending state until the server verifies payment. Cancellation or decline leaves the current sponsor in place.
 
 Keep all previously accepted sponsors in history with brand name, placement, amount, date and current/outbid status. Keep email addresses, Stripe IDs and private billing details private. Count current sponsorship value separately from cumulative payments; refunded bids must not inflate a “raised” total.
 
 Provide secure sponsor management for logo/link edits before branding closes. Validate uploaded files and website URLs. Stop branding edits at the deadline, then reconcile outstanding pre-cutoff payments before freezing the final winning artwork. Add a small authenticated administration page for current sponsors, jobs needing attention, refund status, campaign pause, and tattoo artwork export.
 
-Complete when: each of the six model/list selections opens the correct placement; forms, history and pending/cancelled states work on desktop and mobile; keyboard users can complete the same journey.
+Complete when: each of the eight model/list selections opens the correct placement; forms, history and pending/cancelled states work on desktop and mobile; keyboard users can complete the same journey.
 
 ### 3. Blender model and tattoo placements
 
 Inspect the supplied references before choosing reconstruction versus a reference-based sculpt. Blender is not an automatic guarantee of a faithful scan from arbitrary photos. Produce a reviewable front/back/side model before optimizing.
 
-Author a full-body model with separate named placement anchors for all six leg regions. Use the supplied torso/face and leg photos, emphasizing extremely lean muscle definition as requested. Mouse drag and focused keyboard arrow controls rotate the whole figure. Use replaceable logo patches/decal meshes so a new sponsor does not require rebuilding the model. Maintain correct anatomical left/right and check how shorts/socks affect actual tattoo space.
+Author a full-body model with separate named placement anchors for all eight leg regions. Use the supplied torso/face and leg photos, emphasizing extremely lean muscle definition as requested. Mouse drag and focused keyboard arrow controls rotate the whole figure. Use replaceable logo patches/decal meshes so a new sponsor does not require rebuilding the model. Maintain correct anatomical left/right and check how shorts/socks affect actual tattoo space.
 
 Deliver an editable `.blend`, optimized `.glb`, textures, placement metadata, and static front/back fallback renders. Initial budgets: roughly 30–60k triangles and a GLB below 5 MB, adjusted after phone testing. Load 3D progressively; sponsorship remains usable if WebGL fails.
 
-Complete when: the runner's proportions match the supplied references, all six tattoos remain legible without clipping, front/back switching works, and the site performs acceptably on a phone.
+Complete when: the runner's proportions match the supplied references, all eight tattoos remain legible without clipping, front/back switching works, and the site performs acceptably on a phone.
 
 ### 4. Payment, takeover and refund engine
 
@@ -92,7 +94,7 @@ Test the rules, database transactions, background workers, and real sandbox Chec
 | Fees and FX | EUR fee converted to USD using original rate; decimal rounding; missing fee/rate; unsupported pricing; changed refund-time FX; no double counting. |
 | Refunds | One per takeover; API timeout after successful submission; pending for insufficient balance; failure and retry; prior partial refund; disputed charge. |
 | Deadline | Before, at and after cutoff; Paris-to-UTC conversion; checkout already open; delayed notification of pre-cutoff payment; branding freeze. |
-| Interface | All six muscles; front/back; small screen; touch; keyboard; logo validation; empty/history/sold states; no personal billing data in public responses. |
+| Interface | All eight placements; front/back; small screen; touch; keyboard; logo validation; empty/history/sold states; no personal billing data in public responses. |
 | 3D | Left/right correctness; decal clipping; loading; reduced motion; WebGL failure; slow network and fallback. |
 | Administration | Unauthorized access denied; refund visibility; job recovery; audit trail; final artwork export. |
 
@@ -102,7 +104,7 @@ Maintain a test report distinguishing passed checks, simulated fixtures and test
 
 After the tested build and final model are reviewable, configure the selected host, database, storage, domain, HTTPS, production secrets, signed webhook endpoint and scheduled worker. Verify monitoring and reconciliation on the deployed app. Enable real payments only with live configuration and resolved launch details. When repository publication is requested, commit and push directly to `main`.
 
-At closing, produce the six winning logos with placement names and agreed print dimensions. Keep the public sponsor history available after the auction closes. The site should retain the race story without claiming a finish or result before it occurs.
+At closing, produce the eight winning logos with placement names and agreed print dimensions. Keep the public sponsor history available after the auction closes. The site should retain the race story without claiming a finish or result before it occurs.
 
 ## Stripe setup needed
 
@@ -159,8 +161,8 @@ Stripe can leave refunds pending when the available balance is insufficient. Dis
 - Initialized this previously empty folder as its own repository on `main`, pointing to the requested GitHub repository, to avoid touching the enclosing unrelated repository.
 - Implemented the Next.js campaign, responsive sponsor selection, bid history, rules/checkout dialogs and mouse/keyboard-controlled full-body viewer.
 - Implemented PostgreSQL reservations, server-priced Stripe Checkout, signed webhooks, durable job processing, takeover/refund obligations and exact fee conversion.
-- Built and visually reviewed the full-body Blender source, 3.61 MB optimized GLB, six anchors and front/back fallback renders. Source media remains private. The figure is an artistic interpretation, not a scan.
-- Passed 62 tests against an isolated real PostgreSQL server with simulated Stripe responses, plus production build, type checking, browser interaction checks and Khronos GLB validation (zero errors/warnings).
+- Built and visually reviewed the full-body Blender source, 3.61 MB optimized GLB, eight anchors and front/back fallback renders. Source media remains private. The figure is an artistic interpretation, not a scan.
+- Passed 66 tests against an isolated real PostgreSQL server with simulated Stripe responses, plus production build, type checking, browser interaction checks and Khronos GLB validation (zero errors/warnings).
 - Committed and pushed completed tasks directly to `main` as requested. No PRs and no deployment yet.
 
 Blender 4.5.3 is available locally under ignored `output/blender-tool/`. No live payment or refund was used for testing. Read `TESTING.md` and `database/OPERATIONS.md` for precise verification limits and remaining production work, including operator/artwork management and final seller terms.

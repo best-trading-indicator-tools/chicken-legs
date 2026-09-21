@@ -146,10 +146,77 @@ beforeEach(async () => {
   state.stripe = mockStripe(); loseSessionResponse = false; loseRefundResponse = false;
   await state.engine.exec(`DROP SCHEMA ${testSchema} CASCADE; CREATE SCHEMA ${testSchema};`);
   await state.engine.exec(await readFile(new URL("../database/001_auctions.sql", import.meta.url), "utf8"));
+  await state.engine.exec(await readFile(new URL("../database/002_front_ankles.sql", import.meta.url), "utf8"));
 });
 afterEach(() => { vi.unstubAllEnvs(); vi.clearAllMocks(); });
 
 describe(`durable auction integration (${testUrl ? "multi-connection PostgreSQL" : "embedded PostgreSQL"}, mocked Stripe)`, () => {
+  it("upgrades the six-slot database idempotently without changing sponsors, reservations or refunds", async () => {
+    await state.engine.exec(`DROP SCHEMA ${testSchema} CASCADE; CREATE SCHEMA ${testSchema};`);
+    await state.engine.exec(await readFile(new URL("../database/001_auctions.sql", import.meta.url), "utf8"));
+    for (const name of ["Original", "Winner"]) {
+      await createCheckout(input(name), randomUUID(), name);
+      await pay([...sessions.values()].at(-1)!);
+    }
+    await createCheckout(input("Pending", "right-calf"), randomUUID(), "pending");
+    await state.engine.query("UPDATE campaign_state SET paused=true");
+    const legacySlots = (await state.engine.query("SELECT * FROM auction_slots ORDER BY id")).rows;
+    expect(legacySlots).toHaveLength(6);
+    const tables = ["campaign_state", "reservations", "bids", "refund_obligations", "stripe_events", "jobs", "audit_log"];
+    const before = await Promise.all(tables.map(async (table) => (await state.engine.query(`SELECT * FROM ${table} ORDER BY id`)).rows));
+
+    await state.engine.exec(await readFile(new URL("../database/002_front_ankles.sql", import.meta.url), "utf8"));
+    // The normal runner always starts with 001, including on an upgraded DB.
+    for (const filename of ["001_auctions.sql", "002_front_ankles.sql"]) {
+      await state.engine.exec(await readFile(new URL(`../database/${filename}`, import.meta.url), "utf8"));
+    }
+
+    for (const [index, table] of tables.entries()) {
+      expect((await state.engine.query(`SELECT * FROM ${table} ORDER BY id`)).rows).toEqual(before[index]);
+    }
+    expect((await state.engine.query("SELECT * FROM auction_slots WHERE id NOT IN ('left-ankle','right-ankle') ORDER BY id")).rows).toEqual(legacySlots);
+    const snapshot = await getAuctionSnapshot();
+    expect(snapshot.slots).toHaveLength(8);
+    expect(snapshot.slots.filter((slot) => slot.muscle === "ankle")).toEqual([
+      expect.objectContaining({ id: "left-ankle", currentBidCents: 0, nextBidCents: 100_000, sponsor: null, history: [], reserved: false }),
+      expect.objectContaining({ id: "right-ankle", currentBidCents: 0, nextBidCents: 100_000, sponsor: null, history: [], reserved: false }),
+    ]);
+    expect(snapshot.currentTotalCents).toBe(200_000);
+    expect(snapshot.paymentsEnabled).toBe(false);
+    await expect(state.engine.query("INSERT INTO auction_slots (id) VALUES ('left-arm')")).rejects.toThrow();
+  });
+
+  it("accepts independent front ankle bids and refunds only the displaced ankle sponsor", async () => {
+    for (const [name, slotId] of [["Left", "left-ankle"], ["Right", "right-ankle"], ["Takeover", "left-ankle"]] as const) {
+      await createCheckout(input(name, slotId), randomUUID(), name);
+      const session = [...sessions.values()].at(-1)!;
+      expect(session.metadata?.slot_id).toBe(slotId);
+      expect(session.amount_total).toBe(name === "Takeover" ? 200_000 : 100_000);
+      await pay(session);
+    }
+    const snapshot = await getAuctionSnapshot();
+    const left = snapshot.slots.find((slot) => slot.id === "left-ankle")!;
+    const right = snapshot.slots.find((slot) => slot.id === "right-ankle")!;
+    expect(left.sponsor?.name).toBe("Takeover");
+    expect(left.currentBidCents).toBe(200_000);
+    expect(left.nextBidCents).toBe(400_000);
+    expect(left.history).toHaveLength(2);
+    expect(left.history.find((bid) => bid.sponsorName === "Left")?.status).toBe("outbid");
+    expect(left.history.find((bid) => bid.sponsorName === "Takeover")?.status).toBe("current");
+    expect(right.sponsor?.name).toBe("Right");
+    expect(right.currentBidCents).toBe(100_000);
+    expect(right.nextBidCents).toBe(200_000);
+    expect(right.history).toHaveLength(1);
+    expect([...refunds.values()].map((refund) => refund.amount)).toEqual([96_500]);
+    expect((await state.engine.query("SELECT r.slot_id, o.reason, o.state FROM refund_obligations o JOIN reservations r ON r.id=o.reservation_id")).rows).toEqual([{ slot_id: "left-ankle", reason: "outbid", state: "succeeded" }]);
+    expect(snapshot.currentTotalCents).toBe(300_000);
+    for (const slot of snapshot.slots.filter((slot) => slot.muscle !== "ankle")) {
+      expect(slot.currentBidCents).toBe(0);
+      expect(slot.nextBidCents).toBe(100_000);
+      expect(slot.history).toEqual([]);
+    }
+  });
+
   it("accepts $1K → $2K → $4K with exactly one original-fee refund per takeover", async () => {
     for (const name of ["One", "Two", "Three"]) {
       await createCheckout(input(name), randomUUID(), name);

@@ -18,6 +18,8 @@ export const slots = [
   { id: "right-hamstring", label: "Right hamstring", muscle: "hamstring", side: "right", view: "back" },
   { id: "left-calf", label: "Left calf", muscle: "calf", side: "left", view: "back" },
   { id: "right-calf", label: "Right calf", muscle: "calf", side: "right", view: "back" },
+  { id: "left-ankle", label: "Left front ankle", muscle: "ankle", side: "left", view: "front" },
+  { id: "right-ankle", label: "Right front ankle", muscle: "ankle", side: "right", view: "front" },
 ] as const;
 
 export type SlotId = (typeof slots)[number]["id"];

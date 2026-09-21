@@ -1,7 +1,7 @@
 # Chicken Legs
 
 A 3D sponsorship site for the full Nice–Cannes marathon on **8 November 2026**.
-Six independent leg placements start at **$1,000 USD**. Each takeover doubles
+Eight independent leg placements start at **$1,000 USD**. Each takeover doubles
 the price. Bidding closes **1 November 2026, 23:59 Europe/Paris**.
 
 ## Run locally
@@ -13,22 +13,23 @@ npm run dev
 ```
 
 Open [localhost:3000](http://localhost:3000). With no database/payment setup,
-the site runs an honest preview: six empty spots, no fabricated sponsors and
+the site runs an honest preview: eight empty spots, no fabricated sponsors and
 disabled checkout. Source photos belong in ignored `assets/private/`.
 
 The full-body model rotates by mouse/touch drag. Focus the viewer and use
-**← / →** to turn and **↑ / ↓** to tilt. Front/Back buttons and the six
+**← / →** to turn and **↑ / ↓** to tilt. Front/Back buttons and the eight
 placement buttons provide an accessible alternative. Reduced motion and a
 static front/back fallback are supported.
 
 ## Project files
 
 - `src/components/campaign-page.tsx` — campaign, sponsorship panel, rules, history and checkout form.
-- `src/components/leg-viewer.tsx` — interactive full-body model and six placement anchors.
+- `src/components/leg-viewer.tsx` — interactive full-body model and eight placement anchors.
 - `src/lib/campaign.ts` — public campaign dates, currency and permanent slot IDs.
 - `src/lib/auctions.ts` — transactional reservation and server-priced Checkout.
 - `src/lib/payment-worker.ts` — verified acceptance, takeovers, refund obligations and reconciliation.
-- `database/001_auctions.sql` — PostgreSQL schema and seed slots.
+- `database/001_auctions.sql` — original PostgreSQL schema and seed slots.
+- `database/002_front_ankles.sql` — additive front ankle migration; preserves existing bids.
 - `scripts/blender/build_legs.py` — reproducible Blender asset authoring.
 - `assets/model/chicken-legs.blend` — editable Blender source.
 - `public/models/chicken-legs.glb` — web model; metadata in `placements.json`.

@@ -48,6 +48,8 @@ const placements: Placement[] = [
   { id: "right-hamstring", label: "Right hamstring", shortLabel: "R. HAMSTRING", position: [-0.23, 1.4, -0.225], side: "back" },
   { id: "left-calf", label: "Left calf", shortLabel: "L. CALF", position: [0.25, 0.73, -0.19], side: "back" },
   { id: "right-calf", label: "Right calf", shortLabel: "R. CALF", position: [-0.25, 0.73, -0.19], side: "back" },
+  { id: "left-ankle", label: "Left front ankle", shortLabel: "L. ANKLE", position: [0.2622, 0.506, 0.0839], side: "front" },
+  { id: "right-ankle", label: "Right front ankle", shortLabel: "R. ANKLE", position: [-0.2622, 0.506, 0.0839], side: "front" },
 ];
 
 function useReducedMotion() {
@@ -370,7 +372,7 @@ function StaticPreview({ selectedSlot, onSelectSlot, view, sponsors, loading = f
       )}
       {imageFailed && (
         <p style={{ position: "absolute", top: "45%", left: "50%", transform: "translate(-50%, -50%)", color: "#8fa5b0", width: 200, textAlign: "center", fontSize: 13 }}>
-          The model preview is unavailable. Choose a muscle from the sponsorship list.
+          The model preview is unavailable. Choose a spot from the sponsorship list.
         </p>
       )}
       {!loading && !imageFailed && size.width > 0 && placements.filter((placement) => placement.side === view).map((placement) => {
@@ -469,7 +471,7 @@ export function LegViewer(props: LegViewerProps) {
       }}
     >
       <p id={instructionsId} style={{ position: "absolute", width: 1, height: 1, padding: 0, margin: -1, overflow: "hidden", clipPath: "inset(50%)", whiteSpace: "nowrap", border: 0 }}>
-        Drag to rotate the full-body model. When this viewer is focused, use Left and Right arrow keys to turn, and Up and Down to tilt. Tab to a muscle marker and press Enter to select its sponsorship. Use the front and back buttons to reset the view.
+        Drag to rotate the full-body model. When this viewer is focused, use Left and Right arrow keys to turn, and Up and Down to tilt. Tab to a sponsorship marker and press Enter to select its sponsorship. Use the front and back buttons to reset the view.
       </p>
       <div aria-hidden="true" style={{ position: "absolute", inset: "8% 0 0", background: "radial-gradient(ellipse at 50% 62%, rgba(41, 91, 115, .16), transparent 65%)", pointerEvents: "none" }} />
       {contextLost ? fallback : (
