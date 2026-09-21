@@ -49,6 +49,10 @@ Build the desktop and mobile page with the campaign story, race date, deadline c
 
 Flow: choose a spot → review amount and takeover/refund terms → enter sponsor name, website, email and logo → pay through Stripe-hosted Checkout → return to a payment-status page. Display a pending state until the server verifies payment. Cancellation or decline leaves the current sponsor in place.
 
+Each available sponsorship row opens its own details directly, including clicks on
+the amount or opening-bid label. Keep the selected spot’s Claim button next to the
+panel heading, before the long spot list, so it is visible on desktop.
+
 Keep all previously accepted sponsors in history with brand name, placement, amount, date and current/outbid status. Keep email addresses, Stripe IDs and private billing details private. Count current sponsorship value separately from cumulative payments; refunded bids must not inflate a “raised” total.
 
 Provide secure sponsor management for logo/link edits before branding closes. Validate uploaded files and website URLs. Stop branding edits at the deadline, then reconcile outstanding pre-cutoff payments before freezing the final winning artwork. Add a small authenticated administration page for current sponsors, jobs needing attention, refund status, campaign pause, and tattoo artwork export.

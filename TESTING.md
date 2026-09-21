@@ -105,6 +105,24 @@ and verification scripts are kept locally under `output/playwright/`.
   the working folder. Payment code did not change; the earlier backend test
   results above remain the recorded backend verification.
 
+## Sponsorship action visibility — 21 September 2026
+
+- Moved the selected spot’s Claim action beside the panel heading, before the
+  eight-row list. It is visible without scrolling at 1440×900 and 1280×720.
+  Tablet keeps the heading/action beside the list; mobile places it above.
+- All eight row prices open their matching sponsorship dialog directly on
+  desktop and mobile, with the correct $1,000 opening amount. Enter and Space
+  work, Escape restores focus, and preview payment submission stays disabled.
+- No horizontal overflow at 1440, 1280, 1024, 390 or 320px. Panel screenshots are
+  local under `output/playwright/bid-action-*.png`.
+- **69 browser assertions passed**: 63 interaction/layout checks plus six checks
+  using browser-only auction fixtures. The fixtures verified the clicked spot’s
+  $4,000 takeover price independently of the previous selection and blocked
+  reserved, price-limit, closed and API-error states. No checkout requests were
+  sent, and all browser fixtures were removed afterward.
+- The production build, including TypeScript checks, passed. No server payment
+  configuration changed; live bidding remains disabled.
+
 ## Roast backstory — 21 September 2026
 
 - The new backstory is the first section after the hero and preserves the existing

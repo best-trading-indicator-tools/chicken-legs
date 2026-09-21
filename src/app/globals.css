@@ -82,3 +82,7 @@ input:not([type=checkbox]){min-height:48px}input[type=checkbox]{width:20px;heigh
 @media(max-width:760px){.sponsor-panel{display:block}.slots-list{border:0;padding:0 12px}.panel-footer{padding:20px 16px}.panel-deadline{justify-content:center}.steps-grid{grid-template-columns:1fr}.steps-grid article{border-right:0;border-bottom:1px solid var(--line)}.steps-grid article:last-child{border-bottom:0}}
 @media(max-width:640px){.hero-copy{padding-left:0;padding-right:0}.site-header{padding:0 18px}.site-header nav{gap:10px;font-size:var(--text-small)}.site-header nav button svg{flex-shrink:0}.campaign-stats>div{padding:24px 16px!important}.campaign-stats>div:first-child{padding-left:16px!important}.story-section,.faq-section{grid-template-columns:minmax(0,1fr)}.story-label{flex-wrap:wrap;gap:16px}.empty-history{padding:24px 18px}.empty-history>div{flex:1 1 160px}.dialog-content{padding:28px 22px}.site-footer>span{width:100%}}
 @media(max-width:380px){.slots-list{padding:0 8px}.slot-row{grid-template-columns:18px minmax(0,1fr) 80px;gap:8px}.slot-arrow{display:none}.slot-price{font-size:var(--text-body)}.panel-status{padding:12px}.model-topline{letter-spacing:0;gap:8px}.dialog-content{padding:28px 18px}}
+
+/* Keep the sponsorship action next to its heading, before the eight spots. */
+.panel-intro{min-width:0}.panel-intro .panel-footer{padding-top:0;padding-bottom:22px}
+@media(min-width:761px) and (max-width:1240px){.panel-intro{grid-column:1;grid-row:2;align-self:start}.slots-list{grid-row:2;grid-column:2}}
