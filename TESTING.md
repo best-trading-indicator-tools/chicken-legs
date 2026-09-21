@@ -125,6 +125,22 @@ and verification scripts are kept locally under `output/playwright/`.
 
 ## Roast backstory — 21 September 2026
 
+- Fixed desktop story alignment: previously, at 1440×900 the collage began at
+  y=93 while the story began at y=1161. Both now begin at y=93. The original posts
+  occupy their own row below the story/collage and stack on mobile.
+- Responsive layout checks passed at 1440, 1280, 1024, 768, 390 and 320px. The
+  story introduction is visible alongside the collage on desktop; content stacks
+  in order on mobile with no horizontal overflow. Fresh `#the-story` page loads
+  showed the heading immediately at 1440 and 390px, and both video previews loaded.
+- Full landing-page interaction checks passed in Chromium at 390×844 and 320×740:
+  the hero sponsorship link, sponsor/rules dialogs, front/back photos, all eight
+  opening-price buttons and their matching dialogs, and all four FAQ disclosures.
+  Page sections and dialogs fit horizontally. Preview payment submission remained
+  disabled, and zero checkout POST requests were sent. These were browser viewport
+  checks, not physical-device tests. The production build and TypeScript passed.
+- Reviewed desktop/mobile captures under `output/playwright/story-aligned-*.png`,
+  `story-source-posts-desktop.png`, `story-direct-link-*.png`, and
+  `landing-*-mobile-*.png`; full mobile captures are `landing-mobile-*.png`.
 - Enabled attached media in both X embeds. Both posts contain videos; their
   preview images and players loaded at 1440 and 320px without horizontal overflow.
   Desktop/mobile captures were visually reviewed. The production build and

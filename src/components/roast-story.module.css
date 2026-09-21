@@ -1,7 +1,7 @@
 .section {
   display: grid;
   grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
-  align-items: center;
+  align-items: start;
   gap: clamp(32px, 5vw, 72px);
   margin: 0 48px;
   padding: 64px 0;
@@ -34,9 +34,10 @@
 .imageLink img { display: block; width: 100%; height: auto; }
 .evidence figcaption { padding: 12px 20px; border-top: 1px solid var(--line); border-radius: 0 0 10px 10px; background: var(--panel); color: var(--muted); font-size: var(--text-small); line-height: 1.7; }
 .captionRow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; }
-.evidence figcaption a { display: inline-flex; align-items: center; gap: 5px; min-height: 44px; color: var(--lime); }
-.evidence figcaption svg { flex-shrink: 0; }
-.tweetSource { margin-top: 8px; padding-top: 14px; border-top: 1px solid var(--line); }
+.evidence figcaption a, .tweetSource a { display: inline-flex; align-items: center; gap: 5px; min-height: 44px; color: var(--lime); }
+.evidence figcaption svg, .tweetSource svg { flex-shrink: 0; }
+.sourcePosts { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 24px; }
+.tweetSource { min-width: 0; padding: 16px 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--muted); font-size: var(--text-small); line-height: 1.7; }
 .tweetHeading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 16px; }
 .tweetHeading h3 { color: var(--text); font-size: var(--text-body); font-weight: 600; }
 .tweetEmbed { width: 100%; max-width: 550px; margin: 0 auto; }
@@ -59,6 +60,7 @@
   .copy h2 { font-size: clamp(40px, 7vw, 60px); }
   .copy p { max-width: 620px; }
   .evidence { width: 100%; max-width: 680px; justify-self: center; }
+  .sourcePosts { width: 100%; max-width: 680px; justify-self: center; grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (max-width: 640px) {
@@ -67,4 +69,5 @@
   .imageHeading { padding: 14px; align-items: flex-start; }
   .liveDot { margin-top: 8px; }
   .evidence figcaption { padding: 12px 14px; }
+  .tweetSource { padding: 12px 14px; }
 }
