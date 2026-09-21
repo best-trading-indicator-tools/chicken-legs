@@ -1,6 +1,6 @@
 # Chicken Legs — implementation plan
 
-Status: implementation in progress. Full-body Blender model, interactive website and auction backend are being built. Live checkout remains disabled pending verified configuration.
+Status: full-body Blender model, interactive website and auction backend implemented and locally tested. Live checkout remains disabled pending database/webhook/scheduler configuration, real Stripe sandbox verification and remaining launch details.
 Updated: 21 September 2026.
 
 ## Confirmed brief
@@ -143,9 +143,9 @@ Stripe can leave refunds pending when the available balance is insufficient. Dis
 
 ## Inputs and decisions still needed
 
-- Original leg photos/videos. Front/back/both sides plus diagonal angles, consistent diffuse light, same still stance, legs slightly apart, shorts to feet. Close-ups of tattoo areas and approximate height/thigh/calf measurements help. An optional slow walk-around should move the camera while the runner remains still. Place originals in ignored `assets/private/` or attach them in the conversation.
+- Source media received: five supplied images in ignored `assets/private/`, including torso/face, front/back and leg references. The Blender model uses these references; no further photos are required for this version.
 - Public name/handle, domain, and support contact. These can remain configurable during the build.
-- Sandbox Stripe key and webhook setup, added through local/hosting secrets. Confirm standard versus IC+ pricing.
+- The supplied live Stripe key is stored in ignored `.env.local` and passed a read-only account check. Sandbox credentials and webhook setup are still needed for an actual provider round trip. Confirm standard versus IC+ pricing.
 - Branding dimensions/print requirements and sponsor-logo acceptance rules before taking real payments.
 - Seller/invoicing details and whether advertised prices include applicable taxes. Do not silently add charges to the promised exact doubling.
 - Final customer-facing cancellation/non-participation policy. Recommendation: full refund if the promised race-day placement cannot be delivered; ordinary takeover refunds retain the stated fee deduction. This recommendation is not yet a confirmed campaign term.
@@ -157,6 +157,10 @@ Stripe can leave refunds pending when the available balance is insufficient. Dis
 - Researched Stripe keys, fee retrieval, FX, refunds, Checkout reservation expiry, webhooks and idempotency.
 - Verified existing GitHub authentication; no supplied token was used.
 - Initialized this previously empty folder as its own repository on `main`, pointing to the requested GitHub repository, to avoid touching the enclosing unrelated repository.
-- Prepared this plan, a placeholder environment template and ignore rules. Nothing has been pushed or deployed.
+- Implemented the Next.js campaign, responsive sponsor selection, bid history, rules/checkout dialogs and mouse/keyboard-controlled full-body viewer.
+- Implemented PostgreSQL reservations, server-priced Stripe Checkout, signed webhooks, durable job processing, takeover/refund obligations and exact fee conversion.
+- Built and visually reviewed the full-body Blender source, 3.61 MB optimized GLB, six anchors and front/back fallback renders. Source media remains private. The figure is an artistic interpretation, not a scan.
+- Passed 62 tests against an isolated real PostgreSQL server with simulated Stripe responses, plus production build, type checking, browser interaction checks and Khronos GLB validation (zero errors/warnings).
+- Committed and pushed completed tasks directly to `main` as requested. No PRs and no deployment yet.
 
-No application, Blender asset or Stripe integration exists yet, so no application tests are reported as passing. Blender was not found on PATH or at `/Applications/Blender.app`; locate or install it during the asset-production step.
+Blender 4.5.3 is available locally under ignored `output/blender-tool/`. No live payment or refund was used for testing. Read `TESTING.md` and `database/OPERATIONS.md` for precise verification limits and remaining production work, including operator/artwork management and final seller terms.

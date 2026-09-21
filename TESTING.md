@@ -38,8 +38,21 @@ Playwright checked the site at 1440×1000 and 390×844:
   to the sponsor name. Browser-only fixtures were removed after testing.
 - WebGL context-loss fallback preserves front/back images and slot selection.
 
-Final full-body asset and fallback verification are in progress. Reference
-captures and browser screenshots are kept locally under `output/playwright/`.
+Final full-body desktop/mobile framing and fallback verification passed.
+Reference captures and browser screenshots are kept locally under
+`output/playwright/`.
+
+## Blender asset
+
+- Full-body source and 960×1280 front/back/oblique renders visually reviewed.
+- Editable Blender source plus optimized 3,606,432-byte GLB.
+- 109,515 triangles, 19 material draws, two embedded authored textures.
+- Six correctly named leg-placement anchors and external placement metadata.
+- Khronos glTF validation: zero errors, zero warnings, zero informational issues.
+- Source photos and credentials are not packed into public assets.
+- The model is an artistic reference-based character, not a scan or an exact
+  facial reconstruction. Source/licensing details are documented alongside the
+  Blender scripts.
 
 ## Financial integration limits
 

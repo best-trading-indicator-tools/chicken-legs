@@ -1,0 +1,95 @@
+{
+  "coordinateSystem": "glTF, Y-up, front +Z, anatomical left +X",
+  "placements": {
+    "left_quad": {
+      "position": [
+        0.23142,
+        1.371,
+        0.19896
+      ],
+      "normal": [
+        0.02,
+        0.0,
+        0.9998
+      ],
+      "width": 0.155,
+      "height": 0.2,
+      "view": "front"
+    },
+    "left_hamstring": {
+      "position": [
+        0.22641,
+        1.371,
+        -0.19921
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "width": 0.145,
+      "height": 0.2,
+      "view": "back"
+    },
+    "left_calf": {
+      "position": [
+        0.25111,
+        0.731,
+        -0.18083
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "width": 0.125,
+      "height": 0.14,
+      "view": "back"
+    },
+    "right_quad": {
+      "position": [
+        -0.23142,
+        1.371,
+        0.19896
+      ],
+      "normal": [
+        -0.02,
+        0.0,
+        0.9998
+      ],
+      "width": 0.155,
+      "height": 0.2,
+      "view": "front"
+    },
+    "right_hamstring": {
+      "position": [
+        -0.22641,
+        1.371,
+        -0.19921
+      ],
+      "normal": [
+        -0.0,
+        0.0,
+        -1.0
+      ],
+      "width": 0.145,
+      "height": 0.2,
+      "view": "back"
+    },
+    "right_calf": {
+      "position": [
+        -0.25111,
+        0.731,
+        -0.18083
+      ],
+      "normal": [
+        -0.0,
+        0.0,
+        -1.0
+      ],
+      "width": 0.125,
+      "height": 0.14,
+      "view": "back"
+    }
+  }
+}

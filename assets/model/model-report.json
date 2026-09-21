@@ -1,0 +1,34 @@
+{
+  "file": "public/models/chicken-legs.glb",
+  "bytes": 3606432,
+  "triangles": 109515,
+  "mesh_count": 19,
+  "materials": 19,
+  "anchors": [
+    "left_calf",
+    "left_hamstring",
+    "left_quad",
+    "right_calf",
+    "right_hamstring",
+    "right_quad"
+  ],
+  "embedded_textures": 2,
+  "bounds": {
+    "min": [
+      -0.689107,
+      -0.000003,
+      -0.275202
+    ],
+    "max": [
+      0.689107,
+      3.613996,
+      0.484622
+    ]
+  },
+  "coordinateSystem": "glTF Y-up, front +Z, anatomical left +X",
+  "khronosValidation": {
+    "errors": 0,
+    "warnings": 0,
+    "infos": 0
+  }
+}
