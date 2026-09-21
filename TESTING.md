@@ -22,7 +22,8 @@ payments or deployment are ready.
 
 ## Browser checks
 
-Playwright checked the site at 1440×1000 and 390×844:
+Playwright checked the site at 1440×1000 and 390×844; all **30 page assertions
+passed**, with additional focused viewer checks:
 
 - Each of the six list items selects the correct muscle and front/back view.
 - Selection changes the sponsorship action and checkout heading.
