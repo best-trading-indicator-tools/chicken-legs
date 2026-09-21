@@ -105,6 +105,25 @@ and verification scripts are kept locally under `output/playwright/`.
   the working folder. Payment code did not change; the earlier backend test
   results above remain the recorded backend verification.
 
+## Roast backstory — 21 September 2026
+
+- The new backstory is the first section after the hero and preserves the existing
+  `#the-story` navigation target without duplicating the story further down the page.
+- Browser checks passed at 1440, 1024, 768, 390 and 320px: the supplied collage
+  loads at its original aspect ratio, there is no horizontal overflow, and body
+  copy stays at 16px. Desktop and mobile captures were visually reviewed.
+- The comment excerpts open and close with Enter at every tested width and remain
+  readable without horizontal scrolling. The image opens in a separate tab, the
+  comeback link returns to sponsorships, and the existing checkout dialog opens
+  and dismisses normally. No payment was submitted and no browser errors appeared.
+- Type checking and the production build passed. Payment code was not changed;
+  the earlier backend verification remains the applicable record.
+- `public/images/chicken-legs-roasts.webp` is a lossless, 19,258-byte derivative
+  of the supplied 256×256 PNG. EXIF, XMP and ICC metadata are absent. The original
+  remains ignored under `assets/private/`. The source resolution limits image
+  sharpness; the expandable text excerpts make selected comments accessible.
+- Review captures are local under `output/playwright/roast-story-final-*.png`.
+
 ## Archived Blender asset — earlier verification
 
 The user rejected this likeness. These assets are no longer loaded by the campaign page.

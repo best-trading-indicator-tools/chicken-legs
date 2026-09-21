@@ -1,6 +1,7 @@
 'use client';
 
 import PhotoViewer from './photo-viewer';
+import RoastStory from './roast-story';
 import SponsorDialog from './sponsor-dialog';
 import sponsorStyles from './sponsor-dialog.module.css';
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
@@ -155,11 +156,11 @@ export default function CampaignPage() {
         </aside>
       </section>
 
+      <RoastStory />
+
       <section className="campaign-stats" aria-label="Campaign at a glance"><div><span className="stat-icon"><Crosshair size={18} /></span><strong>{available}<span> / {auctions.slots.length}</span></strong><span>SPOTS STILL UNCLAIMED</span></div><div><strong>$1,000</strong><span>WHERE THE BIDDING STARTS</span></div><div><strong>2×</strong><span>EACH NEW TAKEOVER</span></div><div><strong>42.195<span> km</span></strong><span>OF VERY PUBLIC ADVERTISING</span></div></section>
 
       <section className="how-section" id="how-it-works"><div className="section-intro"><div><span className="eyebrow">A BEAUTIFULLY RIDICULOUS DEAL</span><h2>LEG DAY. <span className="serif-word">Pay day.</span></h2></div><p>A little internet banter.<br />A very real sponsorship.</p></div><div className="steps-grid"><article><span className="step-number">01 /</span><Crosshair size={24} /><h3>Pick your spot.</h3><p>Quads, hamstrings, calves or front ankles. Left or right. Claim an open spot for $1,000.</p></article><article><span className="step-number">02 /</span><Sparkles size={24} /><h3>Make your mark.</h3><p>Hold the spot at closing and your logo becomes a temporary tattoo for race day.</p></article><article><span className="step-number">03 /</span><RotateCcw size={24} /><h3>Outbid? Money back.*</h3><p>Every takeover doubles the price. You get refunded, and your brand stays in the bid history.</p></article></div><p className="fee-footnote">*Less the original itemized Stripe fees. <button onClick={() => setRulesOpen(true)}>The completely transparent small print <ArrowUpRight size={12} /></button></p></section>
-
-      <section className="story-section" id="the-story"><div className="story-label"><span className="eyebrow">THE BACKSTORY</span><span className="story-chicken" aria-hidden="true">🐔</span><span className="mono">EST. LEG DAY, 2026</span></div><div className="story-copy"><h2>THE INTERNET SAID<br /><span>“CHICKEN LEGS.”</span><br />I HEARD “AD SPACE.”</h2><p>My personal coach and chiropractor think I have the legs of an advanced soccer midfielder. The internet has… other opinions.</p><p>So on November 8, I’m putting them to the test at the Nice–Cannes marathon. All 42.195 kilometres of it. Totally untrained.</p><p>But why would I run for free? My quads, hamstrings, calves and front ankles are officially open for business.</p><a href="#sponsorships">Put your money where my muscles are. <ArrowUpRight size={18} /></a></div></section>
 
       <section className="history-section" id="bid-history"><div className="section-intro"><div><span className="eyebrow">EVERY BID BECOMES PART OF THE STORY</span><h2>THE LEG <span className="serif-word">ledger.</span></h2></div><span className="history-count"><History size={15} /> {history.length} accepted {history.length === 1 ? 'bid' : 'bids'}</span></div>{history.length ? <div className="history-table-wrap"><table><thead><tr><th>Sponsor</th><th>Real estate</th><th>Bid</th><th>Status</th></tr></thead><tbody>{history.map(bid => <tr key={bid.id}><td><a href={bid.website} target="_blank" rel="noopener noreferrer sponsored">{bid.sponsorName} <ArrowUpRight size={12} /></a></td><td>{bid.slotLabel}</td><td>{formatUsd(bid.amountCents)}</td><td><span className={`bid-status ${bid.status}`}>{bid.status === 'current' ? 'Current sponsor' : 'Outbid'}</span></td></tr>)}</tbody></table></div> : <div className="empty-history"><span className="empty-history-icon"><Flag size={27} /></span><div><h3>Great legs. Clean slate.</h3><p>No sponsors yet. Someone gets to say they were here first.</p></div><button onClick={openCheckout}>Make the first move <ArrowUpRight size={17} /></button></div>}</section>
 
