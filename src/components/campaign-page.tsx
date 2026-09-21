@@ -144,7 +144,7 @@ export default function CampaignPage() {
         </div>
 
         <div className="model-column">
-          <div className="model-topline"><span><Crosshair size={13} /> THE PRIME REAL ESTATE</span><span>01—{String(auctions.slots.length).padStart(2, '0')}</span></div>
+          <div className="model-topline"><span><Crosshair size={13} /> THE PRIME REAL ESTATE</span><span>{auctions.slots.length} SPONSOR SPOTS</span></div>
           <div className="model-stage photo-stage"><PhotoViewer selectedSlot={selectedId} onSelectSlot={selectSlot} view={view} onViewChange={setView} sponsors={Object.fromEntries(auctions.slots.filter(slot => slot.sponsor).map(slot => [slot.id, { name: slot.sponsor!.name, logoUrl: slot.sponsor!.logoUrl }]))} /></div>
           <div className="model-bottomline"><span><MoveHorizontal size={14} /> PICK A SPOT · ← → CHANGE VIEW</span><div className="view-toggle" aria-label="Photo view"><button aria-pressed={view === 'front'} onClick={() => setView('front')}>Front</button><button aria-pressed={view === 'back'} onClick={() => setView('back')}>Back <RotateCcw size={10} /></button></div></div>
           <div className="model-caption">REAL LEGS. <span>RACE-DAY REAL ESTATE.</span></div>
