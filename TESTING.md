@@ -118,10 +118,14 @@ and verification scripts are kept locally under `output/playwright/`.
   and dismisses normally. No payment was submitted and no browser errors appeared.
 - Type checking and the production build passed. Payment code was not changed;
   the earlier backend verification remains the applicable record.
-- `public/images/chicken-legs-roasts.webp` is a lossless, 19,258-byte derivative
-  of the supplied 256×256 PNG. EXIF, XMP and ICC metadata are absent. The original
-  remains ignored under `assets/private/`. The source resolution limits image
-  sharpness; the expandable text excerpts make selected comments accessible.
+- `public/images/chicken-legs-roasts-800.webp` is a lossless, 125,862-byte derivative
+  of `assets/private/Chicken legs roasts 800X800.png`, replacing the initial
+  256×256 image. The new filename prevents reuse of the old cached image; both
+  collage links and the intrinsic dimensions now reference the 800×800 asset.
+  EXIF, XMP and ICC metadata are absent, and the original remains ignored.
+- The 800×800 replacement passed a decoded-pixel equality check against its PNG
+  source, desktop/mobile image-loading and link checks, and the production build
+  with TypeScript. Updated captures: `output/playwright/roast-story-800-*.png`.
 - Review captures are local under `output/playwright/roast-story-final-*.png`.
 
 ## Archived Blender asset — earlier verification

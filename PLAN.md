@@ -18,7 +18,7 @@ Updated: 21 September 2026.
 | Stripe account | France; customers pay USD, account settles in EUR. |
 | Presentation | Use only `assets/private/V2/vuedefaceV2.png` and `assets/private/V2/vuededosV2.png` for the public front/back photo viewer. Preserve the supplied appearance. Eight clickable sponsorship hotspots; buttons and focused left/right arrows switch views. |
 | Typography | Body copy and form controls use 16px text; compact labels never fall below 14px. Apply the same scale across the whole site, dialogs and mobile layouts. Wrap/reflow content instead of shrinking it. |
-| Roast backstory | Show the supplied `assets/private/Chicken legs roasts.png` collage directly below the hero, explaining how the comments motivated the runner to show the world how strong his legs are. Keep the original private and publish a metadata-free WebP derivative. |
+| Roast backstory | Show the supplied `assets/private/Chicken legs roasts 800X800.png` collage directly below the hero, explaining how the comments motivated the runner to show the world how strong his legs are. This 800×800 source replaces the initial 256×256 image. Keep the original private and publish a metadata-free WebP derivative. |
 | Repository | `best-trading-indicator-tools/chicken-legs`; commit and push each completed task directly to `main`, without pull requests. |
 
 The user added the two front ankle placements after the original six-spot setup. All eight use the same independent starting-price and takeover rules.
@@ -148,7 +148,6 @@ Stripe can leave refunds pending when the available balance is insufficient. Dis
 ## Inputs and decisions still needed
 
 - Final presentation sources received: `assets/private/V2/vuedefaceV2.png` and `assets/private/V2/vuededosV2.png`. No additional photos are required for this version.
-- The supplied roast collage PNG is only 256×256. It is displayed with an expandable, readable selection of the comments; a higher-resolution source would improve collage sharpness.
 - Public name/handle, domain, and support contact. These can remain configurable during the build.
 - The live Stripe key is stored in ignored `.env.local`; the supplied test key is in ignored `.env.sandbox.local`. Both authenticated against the same France account. Real sandbox takeovers and EUR-fee refunds passed. Production worker scheduling is still required; the current Vercel Hobby plan only supports daily jobs. The user has been asked whether to upgrade to Pro or prepare another host.
 - Branding dimensions/print requirements and sponsor-logo acceptance rules before taking real payments.

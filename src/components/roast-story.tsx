@@ -14,11 +14,11 @@ export default function RoastStory() {
     </div>
     <figure className={styles.evidence}>
       <div className={styles.imageHeading}><span className={styles.liveDot} aria-hidden="true" /> THE INTERNET HAS ENTERED THE CHAT</div>
-      <a className={styles.imageLink} href="/images/chicken-legs-roasts.webp" target="_blank" rel="noopener noreferrer" aria-label="Open the roast collage at full size in a new tab">
-        <img src="/images/chicken-legs-roasts.webp" width={256} height={256} loading="lazy" decoding="async" alt="A collage of real comments roasting my legs: ‘They are still chicken’, ‘You’re showing me leg bones I didn’t even know existed’, and ‘And… you’ve never had a leg day in your life.’" />
+      <a className={styles.imageLink} href="/images/chicken-legs-roasts-800.webp" target="_blank" rel="noopener noreferrer" aria-label="Open the roast collage at full size in a new tab">
+        <img src="/images/chicken-legs-roasts-800.webp" width={800} height={800} loading="lazy" decoding="async" alt="A collage of real comments roasting my legs: ‘They are still chicken’, ‘You’re showing me leg bones I didn’t even know existed’, and ‘And… you’ve never had a leg day in your life.’" />
       </a>
       <figcaption>
-        <div className={styles.captionRow}><span>Actual comments. Unexpected motivation.</span><a href="/images/chicken-legs-roasts.webp" target="_blank" rel="noopener noreferrer">View collage <ArrowUpRight size={16} aria-hidden="true" /><span className={styles.screenReaderOnly}> (opens in a new tab)</span></a></div>
+        <div className={styles.captionRow}><span>Actual comments. Unexpected motivation.</span><a href="/images/chicken-legs-roasts-800.webp" target="_blank" rel="noopener noreferrer">View collage <ArrowUpRight size={16} aria-hidden="true" /><span className={styles.screenReaderOnly}> (opens in a new tab)</span></a></div>
         <details className={styles.transcript}>
           <summary>Read a few of the roasts <ChevronDown size={16} aria-hidden="true" /></summary>
           <blockquote><p>“They are still chicken”</p><cite>— Ivom</cite></blockquote>
