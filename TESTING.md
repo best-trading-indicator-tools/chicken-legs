@@ -159,7 +159,15 @@ in Chromium, and Stripe CLI forwarding signed provider webhooks at the SDK's
 - The separate production Neon database has eight slots, zero bids and zero jobs.
   No test sponsors or payment records were copied into it.
 
-Pending production verification: deployed signed webhook, scheduled worker and
+Production deployment `f23ba38` was verified at https://chicken-legs.vercel.app:
+the database-backed API returns eight empty spots, the worker rejects anonymous
+requests with HTTP 401 and succeeds with its bearer secret, and the webhook
+rejects missing signatures while acknowledging a valid signed non-payment probe.
+The probe created no payment/event records. The authenticated operations endpoint
+reported zero pending jobs and refunds. These checks do not establish actual
+Stripe-to-production delivery; the live endpoint remains disabled pending launch.
+
+Pending production verification: provider webhook delivery, scheduled worker and
 job monitoring. Public seller/support/cancellation/tax details and artwork
 management remain operational follow-ups. A sandbox does not prove live settlement
 timing, insufficient-balance refunds or every issuer/dispute scenario.
