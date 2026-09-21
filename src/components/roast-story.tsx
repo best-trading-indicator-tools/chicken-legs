@@ -1,4 +1,5 @@
 import { ArrowUpRight, Flame } from 'lucide-react';
+import RoastTweet from './roast-tweet';
 import styles from './roast-story.module.css';
 
 export default function RoastStory() {
@@ -18,6 +19,7 @@ export default function RoastStory() {
       </a>
       <figcaption>
         <div className={styles.captionRow}><span>Actual comments. Unexpected motivation.</span><a href="/images/chicken-legs-roasts-800.webp" target="_blank" rel="noopener noreferrer">View collage <ArrowUpRight size={16} aria-hidden="true" /><span className={styles.screenReaderOnly}> (opens in a new tab)</span></a></div>
+        <RoastTweet />
       </figcaption>
     </figure>
   </section>;

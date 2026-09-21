@@ -125,6 +125,14 @@ and verification scripts are kept locally under `output/playwright/`.
 
 ## Roast backstory — 21 September 2026
 
+- Embedded the user's original tweet below the collage in X's dark theme, with
+  media collapsed and a persistent “Read the replies” source link. The post text
+  and attribution were verified against X's oEmbed response.
+- The live X embed loaded at 1440, 768, 390 and 320px; both the page and the
+  iframe content fit without horizontal overflow. Desktop/mobile captures were
+  visually reviewed. Blocking X's script kept the source text and two working
+  source links visible at 320px. The production build and TypeScript passed.
+  Captures: `output/playwright/roast-tweet-*.png`.
 - Removed the redundant “Read a few of the roasts” expandable quotes. A rendered
   page check confirmed they are absent while the collage and full-size link remain;
   the production build and TypeScript passed after removal.
