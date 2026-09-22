@@ -92,8 +92,8 @@ and verification scripts are kept locally under `output/playwright/`.
 
 ## Optional background music — 22 September 2026
 
-- Added a persistent music toggle, with an icon-only 48px button on mobile and
-  an on/off label on desktop. Music starts off after loading or refreshing the
+- Added an icon-only 48px music toggle in the website header on desktop and
+  mobile. Music starts off after loading or refreshing the
   page; no audio request occurs until the first activation.
 - Real Chromium playback checks passed: the supplied track plays, pauses,
   resumes from its position, and loops after seeking to the end. Enter and Space
@@ -102,9 +102,10 @@ and verification scripts are kept locally under `output/playwright/`.
 - A blocked audio request displayed a retry message and recovered when unblocked.
   A delayed request could be cancelled without later starting playback or showing
   a false failure. Browser request fixtures were removed after verification.
-- Playback and pause passed at 390×844 and 320×740. The control stays visible while
-  scrolling, fits without horizontal overflow, and leaves the footer accessible.
-  Desktop/mobile screenshots were reviewed under `output/playwright/music-*.png`.
+- Playback and pause passed at 390×844 and 320×740, and again at desktop and
+  320px widths after moving the control into the header. Header layouts passed
+  at 1440, 1280, 768, 390, 381 and 320px without overlap or horizontal overflow.
+  Desktop/mobile screenshots were reviewed under `output/playwright/music-header-*.png`.
   These were browser viewport checks, not physical-device tests.
 - `public/audio/chicken-legs-anthem.mp3` is a metadata-free, 5,713,919-byte
   derivative of the ignored `assets/private/music/chicken-music.mp3`. The full

@@ -38,6 +38,7 @@ input:not([type=checkbox]),input::placeholder{font-size:var(--text-body)}
 .eyebrow{line-height:1.6;letter-spacing:1px}
 .hero-copy>.eyebrow{align-items:flex-start}.tiny-line{flex-shrink:0;margin-top:.7em}
 .header-event{letter-spacing:.5px;gap:7px}.brand i{font-size:var(--text-small)}
+.header-actions{display:flex;align-items:center;gap:20px;flex-shrink:0}.header-music{display:flex;align-items:center}
 .primary-button{line-height:1.5;min-height:48px}.primary-button svg{flex-shrink:0}
 .race-ticket div>span{flex-wrap:wrap;gap:0 9px}.race-route{display:inline-flex;align-items:center;gap:9px;white-space:nowrap}
 .model-topline{align-items:flex-start;flex-wrap:wrap;gap:4px 12px;line-height:1.5;letter-spacing:.6px}
@@ -84,6 +85,8 @@ input:not([type=checkbox]){min-height:48px}input[type=checkbox]{width:20px;heigh
 @media(max-width:760px){.sponsor-panel{display:block}.slots-list{border:0;padding:0 12px}.panel-footer{padding:20px 16px}.panel-deadline{justify-content:center}.steps-grid{grid-template-columns:1fr}.steps-grid article{border-right:0;border-bottom:1px solid var(--line)}.steps-grid article:last-child{border-bottom:0}}
 @media(max-width:640px){.hero-copy{padding-left:0;padding-right:0}.site-header{padding:0 18px}.site-header nav{gap:10px;font-size:var(--text-small)}.site-header nav button svg{flex-shrink:0}.campaign-stats>div{padding:24px 16px!important}.campaign-stats>div:first-child{padding-left:16px!important}.story-section,.faq-section{grid-template-columns:minmax(0,1fr)}.story-label{flex-wrap:wrap;gap:16px}.empty-history{padding:24px 18px}.empty-history>div{flex:1 1 160px}.dialog-content{padding:28px 22px}.site-footer>span{width:100%}}
 @media(max-width:380px){.slots-list{padding:0 8px}.slot-row{grid-template-columns:18px minmax(0,1fr) 80px;gap:8px}.slot-arrow{display:none}.slot-price{font-size:var(--text-body)}.panel-status{padding:12px}.model-topline{letter-spacing:0;gap:8px}.dialog-content{padding:28px 18px}}
+@media(max-width:640px){.header-actions{gap:12px}}
+@media(max-width:380px){.site-header{display:grid;grid-template-columns:minmax(0,1fr) auto;height:auto;min-height:74px;padding-top:12px;padding-bottom:12px;gap:4px 12px}.header-actions{display:contents}.header-music{grid-column:2;grid-row:1}.site-header nav{grid-column:1 / -1;grid-row:2;justify-content:flex-end}.site-header nav button{min-height:44px}}
 
 /* Keep the sponsorship action next to its heading, before the eight spots. */
 .panel-intro{min-width:0}.panel-intro .panel-footer{padding-top:0;padding-bottom:22px}

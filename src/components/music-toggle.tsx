@@ -56,7 +56,6 @@ export default function MusicToggle() {
   }
 
   return <>
-    <div className={styles.footerSpace} aria-hidden="true" />
     <div className={styles.control}>
       {failed && <p id="music-error" className={styles.error} role="status">Music couldn’t load. Try again.</p>}
       <button type="button" className={styles.button} onClick={toggleMusic}
