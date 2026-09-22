@@ -7,7 +7,7 @@ import MusicToggle from './music-toggle';
 import SponsorDialog from './sponsor-dialog';
 import sponsorStyles from './sponsor-dialog.module.css';
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
-import { ArrowRight, ArrowUpRight, Check, ChevronDown, Clock3, Crosshair, Flag, Footprints, History, LockKeyhole, MoveHorizontal, RotateCcw, ShieldCheck, Sparkles, X } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Check, ChevronDown, Clock3, Crosshair, Flag, Footprints, History, LockKeyhole, MoveHorizontal, Pause, Play, RotateCcw, ShieldCheck, Sparkles, X } from 'lucide-react';
 import { campaign, slots, formatUsd, type AuctionSnapshot } from '@/lib/campaign';
 
 const initialAuctions: AuctionSnapshot = { mode: 'preview', paymentsEnabled: false, closed: false, currentTotalCents: 0, slots: slots.map(slot => ({ ...slot, currentBidCents: 0, nextBidCents: campaign.startingBidCents, sponsor: null, history: [], reserved: false })) };
@@ -30,6 +30,7 @@ export default function CampaignPage() {
   const [auctions, setAuctions] = useState<AuctionSnapshot>(initialAuctions);
   const [selectedId, setSelectedId] = useState('left-quad');
   const [view, setView] = useState<'front' | 'back'>('front');
+  const [autoRotate, setAutoRotate] = useState(true);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [rulesOpen, setRulesOpen] = useState(false);
   const [sponsorsOpen, setSponsorsOpen] = useState(false);
@@ -45,6 +46,18 @@ export default function CampaignPage() {
   const selected = auctions.slots.find(slot => slot.id === selectedId) ?? auctions.slots[0];
   const history = auctions.slots.flatMap(slot => slot.history.map(bid => ({ ...bid, slotLabel: slot.label }))).sort((a, b) => new Date(b.acceptedAt).getTime() - new Date(a.acceptedAt).getTime());
   const available = auctions.slots.filter(slot => !slot.sponsor).length;
+
+  const changeView = useCallback((nextView: 'front' | 'back') => {
+    setAutoRotate(false);
+    setView(nextView);
+  }, []);
+  useEffect(() => {
+    const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const respectPreference = () => { if (preference.matches) setAutoRotate(false); };
+    respectPreference();
+    preference.addEventListener('change', respectPreference);
+    return () => preference.removeEventListener('change', respectPreference);
+  }, []);
 
   const refresh = useCallback(async () => {
     setRefreshing(true);
@@ -88,7 +101,7 @@ export default function CampaignPage() {
 
   function selectSlot(id: string) {
     setSelectedId(id); setError('');
-    setView(slots.find(slot => slot.id === id)?.view ?? 'front');
+    changeView(slots.find(slot => slot.id === id)?.view ?? 'front');
   }
   function openSlotCheckout(id: string) {
     const slot = auctions.slots.find(slot => slot.id === id);
@@ -150,8 +163,8 @@ export default function CampaignPage() {
 
         <div className="model-column">
           <div className="model-topline"><span><Crosshair size={13} /> THE PRIME REAL ESTATE</span><span>{auctions.slots.length} SPONSOR SPOTS</span></div>
-          <div className="model-stage photo-stage"><PhotoViewer selectedSlot={selectedId} onSelectSlot={selectSlot} view={view} onViewChange={setView} sponsors={Object.fromEntries(auctions.slots.filter(slot => slot.sponsor).map(slot => [slot.id, { name: slot.sponsor!.name, logoUrl: slot.sponsor!.logoUrl }]))} /></div>
-          <div className="model-bottomline"><span><MoveHorizontal size={14} /> PICK A SPOT · CHANGE VIEW</span><div className="view-toggle" aria-label="Photo view"><button type="button" className="view-arrow" aria-label="Previous photo view" aria-keyshortcuts="ArrowLeft" onClick={() => setView(previous => previous === 'front' ? 'back' : 'front')}>←</button><button aria-pressed={view === 'front'} onClick={() => setView('front')}>Front</button><button aria-pressed={view === 'back'} onClick={() => setView('back')}>Back <RotateCcw size={10} /></button><button type="button" className="view-arrow" aria-label="Next photo view" aria-keyshortcuts="ArrowRight" onClick={() => setView(previous => previous === 'front' ? 'back' : 'front')}>→</button></div></div>
+          <div className="model-stage photo-stage"><PhotoViewer selectedSlot={selectedId} onSelectSlot={selectSlot} view={view} onViewChange={changeView} autoRotate={autoRotate && !checkoutOpen && !rulesOpen && !sponsorsOpen} onAutoViewChange={setView} sponsors={Object.fromEntries(auctions.slots.filter(slot => slot.sponsor).map(slot => [slot.id, { name: slot.sponsor!.name, logoUrl: slot.sponsor!.logoUrl }]))} /></div>
+          <div className="model-bottomline"><span><MoveHorizontal size={14} /> PICK A SPOT · CHANGE VIEW</span><div className="view-toggle" aria-label="Photo view"><button type="button" className="view-arrow" aria-label="Previous photo view" aria-keyshortcuts="ArrowLeft" onClick={() => changeView(view === 'front' ? 'back' : 'front')}>←</button><button aria-pressed={view === 'front'} onClick={() => changeView('front')}>Front</button><button aria-pressed={view === 'back'} onClick={() => changeView('back')}>Back</button><button type="button" className="view-arrow" aria-label="Next photo view" aria-keyshortcuts="ArrowRight" onClick={() => changeView(view === 'front' ? 'back' : 'front')}>→</button><button type="button" className="view-arrow" aria-label={autoRotate ? 'Pause automatic photo switching' : 'Resume automatic photo switching'} title={autoRotate ? 'Pause automatic photo switching' : 'Resume automatic photo switching'} onClick={() => setAutoRotate(previous => !previous)}>{autoRotate ? <Pause size={16} aria-hidden="true" /> : <Play size={16} aria-hidden="true" />}</button></div></div>
           <div className="model-caption">REAL LEGS. <span>RACE-DAY REAL ESTATE.</span></div>
         </div>
 

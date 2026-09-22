@@ -11,6 +11,8 @@ export interface PhotoViewerProps {
   onSelectSlot: (id: string) => void;
   view: View;
   onViewChange?: (view: View) => void;
+  autoRotate?: boolean;
+  onAutoViewChange?: (view: View) => void;
   className?: string;
   sponsors?: Record<string, Sponsor>;
 }
@@ -75,7 +77,7 @@ function SponsorshipMarker({ placement, selected, sponsor, onSelect }: {
   );
 }
 
-export function PhotoViewer({ selectedSlot, onSelectSlot, view, onViewChange, className, sponsors }: PhotoViewerProps) {
+export function PhotoViewer({ selectedSlot, onSelectSlot, view, onViewChange, autoRotate = false, onAutoViewChange, className, sponsors }: PhotoViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRefs = useRef<Partial<Record<View, HTMLImageElement | null>>>({});
   const instructionsId = useId();
@@ -134,6 +136,45 @@ export function PhotoViewer({ selectedSlot, onSelectSlot, view, onViewChange, cl
     return () => window.removeEventListener("keydown", changeView);
   }, [onViewChange, view]);
 
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !autoRotate || !onAutoViewChange || !loaded.front || !loaded.back || failed.front || failed.back) return;
+    let visible = false;
+    let hovered = window.matchMedia('(hover: hover)').matches && container.matches(':hover');
+    let timer: ReturnType<typeof setInterval> | undefined;
+    const updateTimer = () => {
+      clearInterval(timer);
+      const focused = document.activeElement;
+      const editing = focused instanceof HTMLElement && (focused.isContentEditable || focused.closest('input, textarea, select, [role="textbox"], [role="slider"]'));
+      if (!visible || document.hidden || hovered || container.contains(focused) || editing) return;
+      timer = setInterval(() => {
+        if (document.querySelector('dialog[open], [role="dialog"][aria-modal="true"]')) return;
+        onAutoViewChange(view === 'front' ? 'back' : 'front');
+      }, 3000);
+    };
+    const enter = (event: PointerEvent) => { hovered = event.pointerType !== 'touch'; updateTimer(); };
+    const leave = () => { hovered = false; updateTimer(); };
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting && entry.intersectionRatio >= 0.1;
+      updateTimer();
+    }, { threshold: 0.1 });
+    observer.observe(container);
+    container.addEventListener('pointerenter', enter);
+    container.addEventListener('pointerleave', leave);
+    document.addEventListener('focusin', updateTimer);
+    document.addEventListener('focusout', updateTimer);
+    document.addEventListener('visibilitychange', updateTimer);
+    return () => {
+      clearInterval(timer);
+      observer.disconnect();
+      container.removeEventListener('pointerenter', enter);
+      container.removeEventListener('pointerleave', leave);
+      document.removeEventListener('focusin', updateTimer);
+      document.removeEventListener('focusout', updateTimer);
+      document.removeEventListener('visibilitychange', updateTimer);
+    };
+  }, [autoRotate, onAutoViewChange, view, loaded.front, loaded.back, failed.front, failed.back]);
+
   return (
     <div
       ref={containerRef}
@@ -149,7 +190,7 @@ export function PhotoViewer({ selectedSlot, onSelectSlot, view, onViewChange, cl
       }}
     >
       <p id={instructionsId} className={styles.visuallyHidden}>
-        Use the front and back buttons to see both photographs. While the photograph is on screen, Left and Right arrow keys switch views without needing to focus it first. Shortcuts pause while typing or using a dialog. Tab to a sponsorship marker and press Enter to select the spot.
+        Photographs switch automatically every three seconds. Use the pause button to stop, or the front and back buttons to choose a photograph. While the photograph is on screen, Left and Right arrow keys switch views without needing to focus it first. Manual changes stop automatic switching. Shortcuts pause while typing or using a dialog. Tab to a sponsorship marker and press Enter to select the spot.
       </p>
       {(["front", "back"] as const).map((side) => (
         // Both photographs load once, so changing view is immediate. The source

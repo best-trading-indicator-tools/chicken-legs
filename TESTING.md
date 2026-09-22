@@ -89,6 +89,23 @@ production configuration checks; no real-money payment was used for testing.
   Stripe responses remained simulated. The isolated test cluster was stopped
   after verification and did not change the app's local environment.
 
+## Automatic front/back photographs — 22 September 2026
+
+- The hero photographs alternate every three seconds after both images load and
+  the viewer enters the viewport. Only the view changes; the selected sponsorship
+  stays unchanged. The pause/resume control fits alongside Front/Back and arrows.
+- Playwright measured consecutive desktop changes at 3.05 and 3.03 seconds.
+  Hover, keyboard focus, offscreen placement and open dialogs paused switching;
+  leaving hover/focus resumed it. A simulated hidden-tab visibility signal also
+  paused the timer. A blocked back image prevented automatic switching.
+- Manual arrow navigation, Front/Back choices and sponsorship selection stop
+  autoplay until the visitor resumes it. Explicit pause/resume passed.
+- Touch-browser checks passed at 390px and 320px: automatic back view, selecting
+  a calf without subsequent movement, and controls without horizontal overflow.
+  Reduced-motion mode disables autoplay while retaining manual controls.
+- Mobile captures were visually reviewed. Production build and TypeScript passed.
+  No payment code changed and no checkout was submitted during these checks.
+
 ## Site-wide readability — latest verification
 
 - Initial rendered-page scan found 119 visible text fragments below 14px.
