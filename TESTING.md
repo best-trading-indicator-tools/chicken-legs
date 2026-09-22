@@ -3,9 +3,9 @@
 Updated 22 September 2026. This records executed checks, not a claim that live
 payments or deployment are ready.
 
-## Hosted payment verification — 22 September 2026 (in progress)
+## Hosted payment verification — 22 September 2026
 
-- **90/90 automated tests passed, zero skipped**, using isolated real PostgreSQL
+- **102/102 automated tests passed, zero skipped**, using isolated real PostgreSQL
   for service/worker tests and simulated Stripe responses. Production build and
   TypeScript passed. The additional cases cover concurrent idempotency, lost and
   reordered events, pending/failed refunds, late refund failure, delayed fee data,
@@ -20,8 +20,32 @@ payments or deployment are ready.
   (original rate 0.871792). Stripe successfully refunded **$947.21** and
   **$1,894.71**, exactly once each. The third sponsor holds the slot at $4,000;
   its next price is $8,000 and all three sponsors appear in history.
-- Further provider failure cases and deployed recovery/monitoring are being
-  verified before live checkout is enabled. No real-money transaction was used.
+- Playwright also exercised a visible insufficient-funds decline, cancellation,
+  mobile 3-D Secure approval, and mobile authentication failure. Decline/failure
+  created no bid. Native Vercel cron expired and released an abandoned session
+  after its isolated test timer was advanced; no manual worker invocation was used.
+- Stripe's asynchronous refund cards exercised pending → succeeded and
+  succeeded → failed transitions through actual provider webhooks. Each produced
+  exactly one refund. The failed refund became `REFUND_FAILED`/review, with the new
+  $2,000 sponsor and $4,000 next price preserved.
+- An actual Stripe disputed-card payment was held for review, blocked its slot,
+  and triggered the health monitor. The monitor also detected the failed refund.
+- Hosted API checks rejected anonymous administration (401), forged webhooks
+  (400), foreign checkout origins (403), modified prices/invalid terms/unsafe
+  URLs (400), and a sixth new checkout in the rate-limit window (429). Re-signing
+  and replaying a real success event twice created no additional bid or refund.
+  Public snapshots contained no billing emails or Stripe payment identifiers.
+- Fixed customer notices to distinguish pending payments, payments under review,
+  refunds in progress, issued refunds and refunds requiring attention. A payment
+  under review no longer appears to be an ordinary confirmation still loading.
+- The current Vercel team is Pro. Native minute cron heartbeats were observed on
+  production and the isolated test deployment; production's independent GitHub
+  health-monitor run passed, and its five-minute schedule is enabled.
+- Additional regression tests cover prior manual partial refunds, payment/expiry
+  races, persistent rate limits and all public payment/refund status responses.
+  Build and TypeScript passed; `npm audit --omit=dev` reported zero vulnerabilities.
+- Live checkout remains disabled pending final deployed UI and missing-webhook
+  recovery checks. No real-money transaction was used.
 
 ## Automated checks
 

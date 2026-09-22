@@ -420,4 +420,33 @@ describe(`durable auction integration (${testUrl ? "multi-connection PostgreSQL"
     expect((await state.engine.query("SELECT reason,amount,fee_amount FROM refund_obligations")).rows[0]).toEqual({ reason:"invalid_payment",amount:100_000,fee_amount:0 });
   });
 
+  it("routes a prior manual partial refund to review instead of over-refunding", async () => {
+    await createCheckout(input("One"), randomUUID(), "one"); await pay([...sessions.values()][0]);
+    const charge = [...intents.values()][0].latest_charge as Stripe.Charge;
+    charge.amount_refunded = 10_000;
+    refunds.set("re_manual", fake<Stripe.Refund>({ id: "re_manual", amount: 10_000, charge: charge.id, status: "succeeded", metadata: {} }));
+    await createCheckout(input("Two"), randomUUID(), "two"); await pay([...sessions.values()][1]);
+    expect(state.stripe.refunds.create).not.toHaveBeenCalled();
+    expect((await state.engine.query("SELECT state,error_code FROM refund_obligations")).rows[0]).toEqual({ state: "review", error_code: "REFUND_REVIEW" });
+    expect((await getAuctionSnapshot()).slots[0].sponsor?.name).toBe("Two");
+  });
+
+  it("accepts an already-paid reservation when its expiry job races with a missing webhook", async () => {
+    await createCheckout(input("One"), randomUUID(), "one");
+    await pay([...sessions.values()][0], undefined, {}, false);
+    await state.engine.query("UPDATE reservations SET release_after=now()-interval '1 minute'");
+    await pump();
+    expect((await getAuctionSnapshot()).slots[0].sponsor?.name).toBe("One");
+    expect(state.stripe.checkout.sessions.expire).not.toHaveBeenCalled();
+    expect((await state.engine.query("SELECT * FROM bids")).rows).toHaveLength(1);
+  });
+
+  it("rate-limits a sixth new reservation without taking another slot", async () => {
+    const placements: CheckoutInput["slotId"][] = ["left-quad", "right-quad", "left-hamstring", "right-hamstring", "left-calf"];
+    for (const [index, slot] of placements.entries()) await createCheckout(input(`Sponsor${index}`, slot), randomUUID(), "shared-network");
+    await expect(createCheckout(input("Sixth", "right-calf"), randomUUID(), "shared-network")).rejects.toMatchObject({ code: "RATE_LIMITED" });
+    expect((await state.engine.query("SELECT * FROM reservations")).rows).toHaveLength(5);
+    expect((await getAuctionSnapshot()).slots.find(slot => slot.id === "right-calf")?.reserved).toBe(false);
+  });
+
 });

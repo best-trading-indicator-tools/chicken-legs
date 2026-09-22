@@ -4,6 +4,8 @@ import Stripe from "stripe";
 vi.mock("server-only", () => ({}));
 vi.mock("next/server", () => ({ after: vi.fn() }));
 vi.mock("../src/lib/payment-worker", () => ({ recordStripeEvent: vi.fn(), runWorker: vi.fn() }));
+const databaseQuery = vi.hoisted(() => vi.fn());
+vi.mock("../src/lib/db", async (original) => ({ ...await original<typeof import("../src/lib/db")>(), db: () => ({ query: databaseQuery }) }));
 
 import { GET as auctions } from "../src/app/api/auctions/route";
 import { POST as checkout } from "../src/app/api/checkout/route";
@@ -48,6 +50,23 @@ describe("preview API and payment boundaries", () => {
     vi.stubEnv("WORKER_SECRET", "x".repeat(32));
     const response = await operations(new Request("http://localhost/api/internal/status"));
     expect(response.status).toBe(401);
+  });
+  it.each([
+    [undefined, "unknown"],
+    [{ state: "pending", refund_state: null }, "pending"],
+    [{ state: "accepted", refund_state: null }, "accepted"],
+    [{ state: "expired", refund_state: null }, "expired"],
+    [{ state: "review", refund_state: null }, "review"],
+    [{ state: "accepted", refund_state: "pending" }, "refunding"],
+    [{ state: "refunding", refund_state: "waiting_for_fee" }, "refunding"],
+    [{ state: "accepted", refund_state: "succeeded" }, "refunded"],
+    [{ state: "accepted", refund_state: "review" }, "refund_review"],
+  ])("exposes the actual payment/refund state without billing details: %j", async (row, expected) => {
+    vi.stubEnv("DATABASE_URL", "postgres://not-used-in-unit-tests");
+    databaseQuery.mockResolvedValueOnce({ rows: row ? [row] : [] });
+    const response = await status(new Request("http://localhost/api/checkout/status?session_id=cs_test_fake123456789"));
+    expect(await response.json()).toEqual({ status: expected });
+    expect(response.headers.get("cache-control")).toBe("no-store");
   });
 });
 
