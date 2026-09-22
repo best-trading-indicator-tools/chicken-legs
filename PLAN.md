@@ -10,7 +10,7 @@ Updated: 22 September 2026.
 | Campaign | “I'm selling my chicken legs.” Personal coach/chiropractor versus the internet; put the legs to the test. |
 | Event | Full 42.195 km Marathon des Alpes-Maritimes Nice–Cannes, Sunday 8 November 2026. |
 | Running background | The runner has never even run a half marathon but is used to sprinting over long distances. Explain this in the backstory and call the event his first marathon in the hero, replacing the earlier “Zero training” wording. |
-| Personal gallery | Show the four photos and three training videos from `assets/private/gallery-david/` after the roast backstory. Use a responsive photo grid and an accessible full-screen viewer with video controls, previous/next buttons, arrow keys, and photo swiping on mobile. Publish optimized derivatives with source metadata removed; keep originals private. Videos load on opening and pause the optional background music. |
+| Personal gallery | Show the four photos and three training videos from `assets/private/gallery-david/` after the roast backstory. Use a responsive photo grid and an accessible full-screen viewer with video controls, previous/next buttons, arrow keys, and photo swiping on mobile. Publish optimized derivatives with source metadata removed; keep originals private. Videos load on opening, play muted, and have no audio tracks. The optional background music stays independent. |
 | Placements | Eight independent auctions: left/right quad, left/right hamstring, left/right calf, left/right front ankle. Left/right refers to the runner's body. |
 | Starting price | USD $1,000 for each unclaimed placement. |
 | Takeovers | Exactly double the last accepted payment: $1,000 → $2,000 → $4,000 → $8,000. |

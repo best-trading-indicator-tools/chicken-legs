@@ -19,7 +19,7 @@ export const galleryItems: GalleryItem[] = [
     id: 'stair-sprints', kind: 'video', title: 'Stairs count as leg day.',
     caption: 'A stair-sprint session. These legs do get used.',
     alt: 'David sprinting up an outdoor staircase during training',
-    thumbnail: '/gallery/stair-sprints-poster.webp', src: '/gallery/stair-sprints.mp4',
+    thumbnail: '/gallery/stair-sprints-poster.webp', src: '/gallery/stair-sprints-silent.mp4',
     width: 900, height: 1600, duration: '0:08', position: '50% 45%',
   },
   {
@@ -40,7 +40,7 @@ export const galleryItems: GalleryItem[] = [
     id: 'hanging-knee-raises', kind: 'video', title: 'Putting in the reps.',
     caption: 'Hanging knee raises at the outdoor gym.',
     alt: 'David performing hanging knee raises on outdoor exercise bars',
-    thumbnail: '/gallery/hanging-knee-raises-poster.webp', src: '/gallery/hanging-knee-raises.mp4',
+    thumbnail: '/gallery/hanging-knee-raises-poster.webp', src: '/gallery/hanging-knee-raises-silent.mp4',
     width: 900, height: 1600, duration: '0:12', position: '50% 45%',
   },
   {
@@ -54,7 +54,7 @@ export const galleryItems: GalleryItem[] = [
     id: 'stair-jumps', kind: 'video', title: 'Taking the stairs.',
     caption: 'Stair jumps from another training session.',
     alt: 'David jumping up a wide outdoor staircase',
-    thumbnail: '/gallery/stair-jumps-poster.webp', src: '/gallery/stair-jumps.mp4',
+    thumbnail: '/gallery/stair-jumps-poster.webp', src: '/gallery/stair-jumps-silent.mp4',
     width: 900, height: 1600, duration: '0:12', position: '50% 30%',
   },
   {

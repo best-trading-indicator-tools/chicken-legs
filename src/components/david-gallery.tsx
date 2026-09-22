@@ -130,7 +130,7 @@ export default function DavidGallery() {
           }}>
           {mediaFailed ? <div className={styles.mediaError} role="status"><Camera size={30} aria-hidden="true" /><p>This {activeItem.kind} couldn’t load.</p><a href={activeItem.src} target="_blank" rel="noopener noreferrer">Open it in a new tab <ArrowUpRight size={16} /></a></div> : activeItem.kind === 'video' ?
             <video key={activeItem.id} ref={videoRef} className={styles.fullMedia} src={activeItem.src} poster={activeItem.thumbnail}
-              controls playsInline autoPlay preload="none" aria-label={activeItem.alt} onError={() => setMediaFailed(true)} /> :
+              controls playsInline autoPlay muted preload="none" aria-label={activeItem.alt} onError={() => setMediaFailed(true)} /> :
             <img key={activeItem.id} className={styles.fullMedia} src={activeItem.src} alt={activeItem.alt} onError={() => setMediaFailed(true)} />}
         </div>
         <div className={styles.dialogFooter}>

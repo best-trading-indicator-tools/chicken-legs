@@ -15,18 +15,7 @@ export default function MusicToggle() {
 
   useEffect(() => {
     const audio = audioRef.current;
-    const pauseForVideo = (event: Event) => {
-      if (!(event.target instanceof HTMLVideoElement) || event.target.muted || event.target.paused) return;
-      request.current++;
-      wantsPlayback.current = false;
-      audio?.pause();
-      setStatus('off');
-    };
-    document.addEventListener('play', pauseForVideo, true);
-    document.addEventListener('volumechange', pauseForVideo, true);
     return () => {
-      document.removeEventListener('play', pauseForVideo, true);
-      document.removeEventListener('volumechange', pauseForVideo, true);
       request.current++;
       wantsPlayback.current = false;
       audio?.pause();
