@@ -2,6 +2,7 @@
 
 import PhotoViewer from './photo-viewer';
 import RoastStory from './roast-story';
+import DavidGallery from './david-gallery';
 import MusicToggle from './music-toggle';
 import SponsorDialog from './sponsor-dialog';
 import sponsorStyles from './sponsor-dialog.module.css';
@@ -169,6 +170,7 @@ export default function CampaignPage() {
       </section>
 
       <RoastStory />
+      <DavidGallery />
 
       <section className="campaign-stats" aria-label="Campaign at a glance"><div><span className="stat-icon"><Crosshair size={18} /></span><strong>{available}<span> / {auctions.slots.length}</span></strong><span>SPOTS STILL UNCLAIMED</span></div><div><strong>$1,000</strong><span>WHERE THE BIDDING STARTS</span></div><div><strong>2×</strong><span>EACH NEW TAKEOVER</span></div><div><strong>42.195<span> km</span></strong><span>OF VERY PUBLIC ADVERTISING</span></div></section>
 

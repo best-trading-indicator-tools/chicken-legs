@@ -90,6 +90,29 @@ widths. Photo-viewer checks covered:
 Desktop front/back and mobile framing were visually reviewed. Reference captures
 and verification scripts are kept locally under `output/playwright/`.
 
+## Personal photo/video gallery — 22 September 2026
+
+- Added all four photos and three training clips from the ignored
+  `assets/private/gallery-david/` folder after the roast backstory. Prepared
+  WebP photos/thumbnails and H.264/AAC MP4 clips with fast-start headers, preserving
+  the complete clips and removing source metadata. The originals remain private.
+  Published derivatives total 13,033,235 bytes versus 112,451,813 source bytes.
+- Reviewed the responsive grid at 1440, 768, 390 and 320px, without horizontal
+  overflow. Full-size photos use contain sizing in the viewer. Desktop/mobile
+  screenshots are stored locally under `output/playwright/gallery-*.png`.
+- All seven items opened successfully in Chromium, including actual playback of
+  all three videos. No gallery video requests occurred before opening an item.
+  Starting a video paused the background music and updated its header toggle.
+- Verified previous/next buttons, arrow keys, wraparound, Escape, focus return,
+  background scroll locking, and video removal on close. Explicit Tab/Shift+Tab
+  boundary handling keeps keyboard focus inside the viewer.
+- At 390 and 320px, verified modal bounds, video playback, simulated photo-swipe
+  gestures, navigation and keyboard focus containment. These are browser viewport
+  and synthetic touch checks, not physical-device tests.
+- A blocked full-size photo showed a useful error; navigating to another item
+  recovered. The request fixture was removed after verification.
+- The production build and TypeScript passed. Payment behavior was not changed.
+
 ## Running background — 22 September 2026
 
 - Added the confirmed half-marathon and long-distance sprinting background to
