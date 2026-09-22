@@ -120,8 +120,9 @@ and verification scripts are kept locally under `output/playwright/`.
 
 ## Running background — 22 September 2026
 
-- Added the confirmed half-marathon and long-distance sprinting background to
-  the backstory. The hero now says “My first marathon” instead of “Zero training.”
+- The backstory states that David has never run a half marathon and emphasizes
+  his sprinting and stair running with a 15 kg weighted vest. The hero says
+  “My first marathon” instead of “Zero training.”
 - Verified both statements in Chromium at 1440px and 390px widths, with no
   horizontal overflow. Reviewed desktop/mobile backstory screenshots.
 - The production build and TypeScript passed.

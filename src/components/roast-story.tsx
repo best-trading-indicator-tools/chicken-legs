@@ -9,7 +9,7 @@ export default function RoastStory() {
       <h2 id="roast-title">THEY ROASTED<br />MY LEGS.<br /><span>I FOUND MY FUEL.</span></h2>
       <p>My coach and chiropractor see a soccer midfielder. The internet sees… chicken legs. And the comment section did not hold back.</p>
       <p>I laughed. Then I got motivated. Now I want to show the world <strong>how strong these legs really are.</strong></p>
-      <p>I’ve <strong>never even run a half marathon in my life</strong>, but I’m used to sprinting over long distances.</p>
+      <p>I’ve never even run a half marathon in my life, but I’m used to hard training: <strong>sprinting and running up stairs with a 15 kg weighted vest.</strong></p>
       <p>On November 8, I’m putting them to the test at the Nice–Cannes marathon. All 42.195 kilometres. Consider it my very long reply.</p>
       <a className={styles.cta} href="#sponsorships">Be part of the comeback <ArrowUpRight size={18} aria-hidden="true" /></a>
     </div>
