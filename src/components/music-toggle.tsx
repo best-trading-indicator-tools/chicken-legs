@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { LoaderCircle, Music2, VolumeX } from 'lucide-react';
 import styles from './music-toggle.module.css';
 
-const musicUrl = '/audio/chicken-legs-anthem.mp3';
+const musicUrl = '/audio/chicken-legs-anthem-v2.mp3';
 
 export default function MusicToggle() {
   const audioRef = useRef<HTMLAudioElement>(null);

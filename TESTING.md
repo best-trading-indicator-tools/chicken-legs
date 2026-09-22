@@ -107,10 +107,13 @@ and verification scripts are kept locally under `output/playwright/`.
   at 1440, 1280, 768, 390, 381 and 320px without overlap or horizontal overflow.
   Desktop/mobile screenshots were reviewed under `output/playwright/music-header-*.png`.
   These were browser viewport checks, not physical-device tests.
-- `public/audio/chicken-legs-anthem.mp3` is a metadata-free, 5,713,919-byte
-  derivative of the ignored `assets/private/music/chicken-music.mp3`. The full
-  238.004535-second track retains its original 192 kbps stereo audio; decoded PCM
+- Replaced the soundtrack with `assets/private/music/chicken-musicV2.mp3`.
+  Its public derivative, `public/audio/chicken-legs-anthem-v2.mp3`, strips source
+  metadata and uses a new URL to avoid cached V1 audio. The 8,847,360-byte file
+  retains all 221.128146 seconds of 320 kbps, 48 kHz stereo audio; decoded PCM
   SHA-256 hashes match. The source remains private and unchanged.
+- Browser playback confirmed the V2 URL and duration, silent initial load, and
+  working play/pause through the header control.
 - The production build and TypeScript passed. No payment behavior changed.
 
 ## Photo arrow controls — 21 September 2026
