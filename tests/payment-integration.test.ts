@@ -46,6 +46,8 @@ let refunds: Map<string, Stripe.Refund>;
 let idempotency: Map<string, string>;
 let loseSessionResponse = false;
 let loseRefundResponse = false;
+let refundStatus: Stripe.Refund["status"] = "succeeded";
+let providerEvents: Stripe.Event[] = [];
 const fake = <T>(value: unknown): T => value as T;
 const testUrl = process.env.TEST_DATABASE_URL;
 const testSchema = testUrl ? `service_test_${randomUUID().replaceAll("-", "")}` : "public";
@@ -54,7 +56,7 @@ let directPool: Pool | undefined;
 let serviceDatabaseUrl = "postgres://embedded-test-only";
 
 function mockStripe() {
-  sessions = new Map(); intents = new Map(); refunds = new Map(); idempotency = new Map();
+  sessions = new Map(); intents = new Map(); refunds = new Map(); idempotency = new Map(); providerEvents = []; refundStatus = "succeeded";
   return fake<Stripe>({
     checkout: { sessions: {
       create: vi.fn(async (params: Stripe.Checkout.SessionCreateParams, options: { idempotencyKey: string }) => {
@@ -75,7 +77,7 @@ function mockStripe() {
         const existing = idempotency.get(options.idempotencyKey);
         if (existing) return refunds.get(existing);
         const id = `re_${randomUUID()}`;
-        const refund = fake<Stripe.Refund>({ id, amount: params.amount, charge: params.charge, status: "succeeded", metadata: params.metadata });
+        const refund = fake<Stripe.Refund>({ id, amount: params.amount, charge: params.charge, status: refundStatus, metadata: params.metadata });
         refunds.set(id, refund); idempotency.set(options.idempotencyKey, id);
         for (const intent of intents.values()) if ((intent.latest_charge as Stripe.Charge).id === params.charge) (intent.latest_charge as Stripe.Charge).amount_refunded = params.amount!;
         if (loseRefundResponse) { loseRefundResponse = false; throw new Error("simulated network response lost"); }
@@ -84,7 +86,7 @@ function mockStripe() {
       list: vi.fn(async ({ charge }: { charge: string }) => ({ data: [...refunds.values()].filter((refund) => refund.charge === charge), has_more: false })),
       retrieve: vi.fn(async (id: string) => refunds.get(id)),
     },
-    events: { list: vi.fn(async () => ({ data: [], has_more: false })) },
+    events: { list: vi.fn(async () => ({ data: providerEvents, has_more: false })) },
   });
 }
 
@@ -95,7 +97,7 @@ async function pump() {
   await runWorker(20);
 }
 
-async function pay(session: Stripe.Checkout.Session, timestamp = Math.floor(Date.now() / 1000), override: Partial<Stripe.PaymentIntent> = {}) {
+async function pay(session: Stripe.Checkout.Session, timestamp = Math.floor(Date.now() / 1000), override: Partial<Stripe.PaymentIntent> = {}, deliver = true) {
   const id = `pi_${randomUUID()}`;
   const amount = session.amount_total!;
   const settlement = Math.round(amount * 0.9);
@@ -107,8 +109,8 @@ async function pay(session: Stripe.Checkout.Session, timestamp = Math.floor(Date
   });
   intents.set(id, intent); session.payment_intent = id; session.payment_status = "paid"; session.status = "complete";
   const event = fake<Stripe.Event>({ id: `evt_${randomUUID()}`, type: "payment_intent.succeeded", created: timestamp, livemode: false, data: { object: intent } });
-  await recordStripeEvent(event);
-  await pump();
+  providerEvents.push(event);
+  if (deliver) { await recordStripeEvent(event); await pump(); }
   return event;
 }
 
@@ -303,4 +305,119 @@ describe(`durable auction integration (${testUrl ? "multi-connection PostgreSQL"
     expect((await state.engine.query<{ state: string }>("SELECT state FROM refund_obligations")).rows[0].state).toBe("waiting_for_fee");
     expect((await getAuctionSnapshot()).slots[0].sponsor?.name).toBe("Two");
   });
+
+  it("reuses a simultaneous duplicate checkout key and rejects changed details", async () => {
+    const key = randomUUID();
+    const results = await Promise.all([createCheckout(input("One"), key, "one"), createCheckout(input("One"), key, "one")]);
+    expect(results[0].url).toBe(results[1].url);
+    expect(sessions.size).toBe(1);
+    await expect(createCheckout(input("Changed"), key, "one")).rejects.toMatchObject({ code: "KEY_REUSED" });
+  });
+
+  it("blocks a second pending placement for the same sponsor email", async () => {
+    await createCheckout(input("One"), randomUUID(), "one");
+    await expect(createCheckout(input("One", "right-quad"), randomUUID(), "one")).rejects.toMatchObject({ code: "CHECKOUT_IN_PROGRESS" });
+    expect((await getAuctionSnapshot()).slots.find(s => s.id === "right-quad")?.reserved).toBe(false);
+  });
+
+  it("recovers a missing success webhook from the provider event history", async () => {
+    await createCheckout(input("One"), randomUUID(), "one");
+    await pay([...sessions.values()][0], undefined, {}, false);
+    await pump();
+    expect(state.stripe.events.list).toHaveBeenCalled();
+    expect((await getAuctionSnapshot()).slots[0].sponsor?.name).toBe("One");
+    expect((await state.engine.query("SELECT * FROM bids")).rows).toHaveLength(1);
+  });
+
+  it("accepts a session-completed notification before the success notification without duplicating the bid", async () => {
+    await createCheckout(input("One"), randomUUID(), "one");
+    const session = [...sessions.values()][0];
+    const success = await pay(session, undefined, {}, false);
+    await recordStripeEvent(fake<Stripe.Event>({ id: `evt_${randomUUID()}`, type: "checkout.session.completed", created: success.created, livemode: false, data: { object: session } }));
+    await pump(); await recordStripeEvent(success); await pump();
+    expect((await state.engine.query("SELECT * FROM bids")).rows).toHaveLength(1);
+  });
+
+  it("keeps pending refunds pending and confirms them without another refund submission", async () => {
+    await createCheckout(input("One"), randomUUID(), "one"); await pay([...sessions.values()][0]);
+    refundStatus = "pending";
+    await createCheckout(input("Two"), randomUUID(), "two"); await pay([...sessions.values()][1]);
+    expect((await state.engine.query<{ state: string }>("SELECT state FROM refund_obligations")).rows[0].state).toBe("pending");
+    const refund = [...refunds.values()][0]; refund.status = "succeeded";
+    await recordStripeEvent(fake<Stripe.Event>({ id: `evt_${randomUUID()}`, type: "refund.updated", created: Math.floor(Date.now()/1000), livemode: false, data: { object: refund } }));
+    await pump();
+    expect((await state.engine.query<{ state: string }>("SELECT state FROM refund_obligations")).rows[0].state).toBe("succeeded");
+    expect(state.stripe.refunds.create).toHaveBeenCalledTimes(1);
+  });
+
+  it("flags a refund that later fails after previously reporting success", async () => {
+    await createCheckout(input("One"), randomUUID(), "one"); await pay([...sessions.values()][0]);
+    await createCheckout(input("Two"), randomUUID(), "two"); await pay([...sessions.values()][1]);
+    const refund = [...refunds.values()][0]; refund.status = "failed";
+    await recordStripeEvent(fake<Stripe.Event>({ id: `evt_${randomUUID()}`, type: "refund.failed", created: Math.floor(Date.now()/1000), livemode: false, data: { object: refund } }));
+    await pump();
+    expect((await state.engine.query("SELECT state,error_code FROM refund_obligations")).rows[0]).toEqual({ state: "review", error_code: "REFUND_FAILED" });
+    expect(state.stripe.refunds.create).toHaveBeenCalledTimes(1);
+    expect((await getAuctionSnapshot()).slots[0].sponsor?.name).toBe("Two");
+  });
+
+  it("flags an initially failed refund without issuing another refund", async () => {
+    await createCheckout(input("One"), randomUUID(), "one"); await pay([...sessions.values()][0]);
+    refundStatus = "failed";
+    await createCheckout(input("Two"), randomUUID(), "two"); await pay([...sessions.values()][1]);
+    await pump();
+    expect((await state.engine.query("SELECT state,error_code FROM refund_obligations")).rows[0]).toEqual({ state: "review", error_code: "REFUND_FAILED" });
+    expect(state.stripe.refunds.create).toHaveBeenCalledTimes(1);
+  });
+
+  it("resumes a waiting refund when original fee information becomes available", async () => {
+    await createCheckout(input("One"), randomUUID(), "one"); await pay([...sessions.values()][0]);
+    const charge = [...intents.values()][0].latest_charge as Stripe.Charge;
+    const evidence = charge.balance_transaction; charge.balance_transaction = null;
+    await createCheckout(input("Two"), randomUUID(), "two"); await pay([...sessions.values()][1]);
+    expect(refunds.size).toBe(0); charge.balance_transaction = evidence; await pump();
+    expect([...refunds.values()][0].amount).toBe(96_500);
+    expect((await state.engine.query<{ state: string }>("SELECT state FROM refund_obligations")).rows[0].state).toBe("succeeded");
+  });
+
+  it("blocks further takeovers when the current sponsor's payment is disputed", async () => {
+    await createCheckout(input("One"), randomUUID(), "one"); await pay([...sessions.values()][0]);
+    const intent = [...intents.values()][0];
+    await recordStripeEvent(fake<Stripe.Event>({ id: `evt_${randomUUID()}`, type: "charge.dispute.created", created: Math.floor(Date.now()/1000), livemode: false, data: { object: { payment_intent: intent.id } } }));
+    await pump();
+    expect((await getAuctionSnapshot()).slots[0].reserved).toBe(true);
+    await expect(createCheckout(input("Two"), randomUUID(), "two")).rejects.toMatchObject({ code: "PLACEMENT_REVIEW" });
+    expect(refunds.size).toBe(0);
+  });
+
+  it("does not refund a disputed former sponsor automatically", async () => {
+    await createCheckout(input("One"), randomUUID(), "one"); await pay([...sessions.values()][0]);
+    await createCheckout(input("Two"), randomUUID(), "two");
+    ([...intents.values()][0].latest_charge as Stripe.Charge).disputed = true;
+    await pay([...sessions.values()][1]);
+    expect(refunds.size).toBe(0);
+    expect((await state.engine.query("SELECT state,error_code FROM refund_obligations")).rows[0]).toEqual({ state: "review", error_code: "DISPUTE_REVIEW" });
+  });
+
+  it("recovers a job left running by an interrupted worker", async () => {
+    await createCheckout(input("One"), randomUUID(), "one");
+    await pay([...sessions.values()][0], undefined, {}, false);
+    await state.engine.query("UPDATE jobs SET state='running',locked_until=now()-interval '1 minute'");
+    await runWorker();
+    expect((await getAuctionSnapshot()).slots[0].sponsor?.name).toBe("One");
+    expect((await state.engine.query<{ count: number }>("SELECT count(*)::int AS count FROM jobs WHERE state='running'")).rows[0].count).toBe(0);
+  });
+
+  it("rejects live events in a test environment before recording anything", async () => {
+    await expect(recordStripeEvent(fake<Stripe.Event>({id:`evt_${randomUUID()}`,type:"payment_intent.succeeded",livemode:true,data:{object:{}}}))).rejects.toMatchObject({code:"MODE_MISMATCH"});
+    expect((await state.engine.query("SELECT * FROM stripe_events")).rows).toHaveLength(0);
+  });
+
+  it("fully refunds a payment with the wrong amount without assigning sponsorship", async () => {
+    await createCheckout(input("Wrong"), randomUUID(), "wrong");
+    await pay([...sessions.values()][0], undefined, { amount_received: 90_000 });
+    expect((await state.engine.query("SELECT * FROM bids")).rows).toHaveLength(0);
+    expect((await state.engine.query("SELECT reason,amount,fee_amount FROM refund_obligations")).rows[0]).toEqual({ reason:"invalid_payment",amount:100_000,fee_amount:0 });
+  });
+
 });

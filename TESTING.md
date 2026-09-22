@@ -3,6 +3,26 @@
 Updated 22 September 2026. This records executed checks, not a claim that live
 payments or deployment are ready.
 
+## Hosted payment verification — 22 September 2026 (in progress)
+
+- **90/90 automated tests passed, zero skipped**, using isolated real PostgreSQL
+  for service/worker tests and simulated Stripe responses. Production build and
+  TypeScript passed. The additional cases cover concurrent idempotency, lost and
+  reordered events, pending/failed refunds, late refund failure, delayed fee data,
+  disputes, stale worker leases, mode isolation, wrong amounts and health alerts.
+- Reproduced and fixed a refund reconciliation bug: a bank failure after initial
+  success now marks the refund for review, without resubmitting it or changing
+  the current winning sponsor.
+- A separate Vercel project and separate Neon database received actual signed
+  Stripe sandbox webhooks directly, without Stripe CLI forwarding. Playwright
+  completed three hosted `4242` card checkouts for $1,000 → $2,000 → $4,000.
+- Independently recalculated fees from the original EUR balance transactions
+  (original rate 0.871792). Stripe successfully refunded **$947.21** and
+  **$1,894.71**, exactly once each. The third sponsor holds the slot at $4,000;
+  its next price is $8,000 and all three sponsors appear in history.
+- Further provider failure cases and deployed recovery/monitoring are being
+  verified before live checkout is enabled. No real-money transaction was used.
+
 ## Automated checks
 
 - TypeScript type check: passed.

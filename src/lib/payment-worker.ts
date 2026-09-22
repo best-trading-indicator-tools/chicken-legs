@@ -146,9 +146,9 @@ interface RefundRow {
   stripe_refund_id: string | null; submitted_at: Date | null;
 }
 
-async function reconcileRefund(reservationId: string): Promise<void> {
+async function reconcileRefund(reservationId: string, refreshProviderStatus = false): Promise<void> {
   const obligation = (await db().query<RefundRow>("SELECT * FROM refund_obligations WHERE reservation_id=$1", [reservationId])).rows[0];
-  if (!obligation || ["succeeded", "review"].includes(obligation.state)) return;
+  if (!obligation || obligation.state === "review" || (obligation.state === "succeeded" && !refreshProviderStatus)) return;
   const stripe = getStripe();
   const intent = await stripe.paymentIntents.retrieve(obligation.payment_intent_id, { expand: ["latest_charge.balance_transaction"] });
   if (!intent.latest_charge || typeof intent.latest_charge === "string") throw new RetryLater("CHARGE_PENDING");
@@ -193,7 +193,12 @@ async function reconcileRefund(reservationId: string): Promise<void> {
   await db().query("UPDATE refund_obligations SET stripe_refund_id=$2,updated_at=now() WHERE id=$1", [obligation.id, refund.id]);
   const storedAmount = obligation.amount ?? (await db().query("SELECT amount FROM refund_obligations WHERE id=$1", [obligation.id])).rows[0].amount;
   if (refund.amount !== storedAmount || (typeof refund.charge === "string" ? refund.charge : refund.charge?.id) !== charge.id) throw new AuctionError("REFUND_REVIEW", "Refund identity or amount mismatch.", 503);
-  if (refund.status === "failed" || refund.status === "canceled") throw new AuctionError("REFUND_FAILED", "Stripe refund failed; manual reconciliation required.", 503);
+  if (refund.status === "failed" || refund.status === "canceled") {
+    // Banks can return a refund after Stripe initially reports success. Persist
+    // the failure even when this check runs from an event job, not a refund job.
+    await db().query("UPDATE refund_obligations SET state='review',error_code='REFUND_FAILED',updated_at=now() WHERE id=$1", [obligation.id]);
+    throw new AuctionError("REFUND_FAILED", "Stripe refund failed; manual reconciliation required.", 503);
+  }
   await db().query("UPDATE refund_obligations SET state=$2,error_code=NULL,updated_at=now() WHERE id=$1", [obligation.id, refund.status === "succeeded" ? "succeeded" : "pending"]);
   if (refund.status !== "succeeded") throw new RetryLater("REFUND_PENDING", 180);
 }
@@ -222,7 +227,7 @@ async function processEvent(id: string): Promise<void> {
     });
   } else if (event.type.startsWith("refund.")) {
     const refund = event.data.object as Stripe.Refund;
-    if (refund.metadata?.reservation_id) await reconcileRefund(refund.metadata.reservation_id);
+    if (refund.metadata?.reservation_id) await reconcileRefund(refund.metadata.reservation_id, true);
   }
   // charge.updated is durably recorded; the existing waiting-for-fee job retries.
 }

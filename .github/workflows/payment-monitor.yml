@@ -1,0 +1,28 @@
+name: Payment health monitor
+
+on:
+  schedule:
+    - cron: '3-59/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: payment-health-monitor
+  cancel-in-progress: false
+
+jobs:
+  check:
+    if: github.repository == 'best-trading-indicator-tools/chicken-legs' && (github.event_name == 'workflow_dispatch' || vars.PAYMENT_MONITOR_ENABLED == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Check scheduled recovery and unresolved payments
+        env:
+          PAYMENT_STATUS_URL: https://www.chickenlegs.wtf/api/internal/status
+          PAYMENT_WORKER_SECRET: ${{ secrets.PAYMENT_WORKER_SECRET }}
+        run: node scripts/check-payment-health.mjs

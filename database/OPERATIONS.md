@@ -3,7 +3,7 @@
 The real Stripe sandbox checkout → webhook → takeover → refund sequence passed
 on 21 September 2026; see `TESTING.md`. Production is connected to the user-approved
 Neon database in Frankfurt, with an empty set of eight auction slots. Live checkout
-remains disabled until hosting and scheduled recovery are ready. Unit tests use
+remains disabled during final deployed recovery and failure-case verification. Unit tests use
 synthetic Stripe responses; PostgreSQL tests require `TEST_DATABASE_URL`.
 No financial API call is part of `npm test`.
 
@@ -29,17 +29,24 @@ No financial API call is part of `npm test`.
    server-side scheduler must send this header; do not put it in browser code.
    The worker processes up to ten jobs or about forty seconds per invocation.
    On Vercel, set `CRON_SECRET` equal to `WORKER_SECRET`; Vercel sends the matching
-   bearer header. Minute-by-minute Vercel cron requires Pro or Enterprise. The
-   current Hobby project has no cron configured; do not add a minute schedule
-   before upgrading, because deployment will fail. The intended configuration is
-   `"crons": [{ "path": "/api/internal/worker", "schedule": "* * * * *" }]`
-   in `vercel.json` once the plan supports it.
+   bearer header. The existing team is now on Pro and `vercel.json` schedules
+   this route every minute. Each completed scheduled run records an audit heartbeat;
+   webhook-triggered runs do not count as proof that the scheduler is working.
    Verified Stripe webhooks also start `runWorker()` with Next.js `after()` after
    committing the event. This makes normal confirmations and refunds prompt;
    it does not replace the scheduler for abandoned checkouts and delayed retries.
 5. Poll authenticated `/api/internal/status` for review jobs, stalled reservations,
    disputed placements and refund status. Alert on review jobs and worker
-   inactivity. Do not switch on checkout before scheduling and monitoring work.
+   inactivity. Its `health` report flags a missing/older-than-ten-minute worker
+   heartbeat, review jobs, overdue work, stalled reservations, disputed placements
+   and refunds pending over 24 hours. The independent GitHub Actions workflow
+   `.github/workflows/payment-monitor.yml` checks this report every five minutes
+   (GitHub can delay scheduled runs). Set the repository secret
+   `PAYMENT_WORKER_SECRET` to the worker secret, manually verify the workflow, then
+   set repository variable `PAYMENT_MONITOR_ENABLED=true`. A failed check produces
+   a failed workflow run; operators should enable GitHub failed-workflow
+   notifications. Recovery itself runs on Vercel, independently of GitHub.
+   Do not switch on checkout before scheduling and monitoring work.
 
 The public APIs never expose billing emails, Stripe identifiers or fee evidence.
 Return pages query `/api/checkout/status?session_id=...`; they cannot confirm a
@@ -61,6 +68,9 @@ outbid sponsor loses only itemized `stripe_fee` amounts converted using the
 original rate. Invalid or late paid attempts receive full captured-amount refunds.
 Missing fee data waits. Unexpected currency, IC+ fees, missing original rate,
 inconsistent itemization, refund failures and disputes need operator review.
+A refund that Stripe initially reports as successful can subsequently fail;
+its provider event refreshes the recorded state and flags it for review. The
+current sponsor remains valid and no replacement refund is submitted automatically.
 Do not manually refund a payment without reconciling its existing obligation.
 
 Outstanding operations work: enable and verify production scheduling and the
