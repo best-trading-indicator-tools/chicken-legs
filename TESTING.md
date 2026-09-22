@@ -166,7 +166,13 @@ and verification scripts are kept locally under `output/playwright/`.
 
 ## Personal photo/video gallery — 22 September 2026
 
-- The gallery now contains three photos and three training clips from the ignored
+- Removed “The legs in question” from the grid and viewer. The five remaining
+  items fill desktop rows of 3 + 2 and mobile/tablet rows of 1 + 2 + 2. Counts
+  derive from the gallery data. Playwright verified all thumbnails, the five-item
+  viewer counter, next navigation, muted video playback and no horizontal overflow
+  at 1440, 768, 390 and 320px. Desktop/mobile captures were visually reviewed.
+  Production build and TypeScript passed.
+- The gallery now contains two photos and three training clips from the ignored
   `assets/private/gallery-david/` folder after the roast backstory. Prepared
   WebP photos/thumbnails and H.264 MP4 clips with fast-start headers, preserving
   the complete clips and removing source metadata. The originals remain private.

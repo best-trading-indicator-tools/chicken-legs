@@ -81,7 +81,7 @@ export default function DavidGallery() {
       </div>
 
       <div className={styles.footer}>
-        <p><span className={styles.dot} aria-hidden="true" /> 3 photos · 3 videos <span className={styles.footerHint}>· Open any moment</span></p>
+        <p><span className={styles.dot} aria-hidden="true" /> {galleryItems.filter(item => item.kind === 'photo').length} photos · {galleryItems.filter(item => item.kind === 'video').length} videos <span className={styles.footerHint}>· Open any moment</span></p>
         <a href="#sponsorships">Back these legs <ArrowUpRight size={17} aria-hidden="true" /></a>
       </div>
     </section>

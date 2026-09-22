@@ -23,13 +23,6 @@ export const galleryItems: GalleryItem[] = [
     width: 900, height: 1600, duration: '0:08', position: '50% 45%',
   },
   {
-    id: 'seafront-back', kind: 'photo', title: 'The legs in question.',
-    caption: 'The other side of the story.',
-    alt: 'David from behind in red shorts on a palm-lined promenade',
-    thumbnail: '/gallery/seafront-back-thumb.webp', src: '/gallery/seafront-back.webp',
-    width: 960, height: 1280, position: '50% 60%',
-  },
-  {
     id: 'sunshine-selfie', kind: 'photo', title: 'Out in the sun.',
     caption: 'A little sunshine between workouts.',
     alt: 'David taking a close-up selfie in the sunshine, wearing a cap',
