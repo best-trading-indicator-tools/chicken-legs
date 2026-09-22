@@ -92,15 +92,20 @@ and verification scripts are kept locally under `output/playwright/`.
 
 ## Personal photo/video gallery — 22 September 2026
 
-- Added all four photos and three training clips from the ignored
+- The gallery now contains three photos and three training clips from the ignored
   `assets/private/gallery-david/` folder after the roast backstory. Prepared
   WebP photos/thumbnails and H.264 MP4 clips with fast-start headers, preserving
   the complete clips and removing source metadata. The originals remain private.
-  Published derivatives total 12,618,707 bytes versus 112,451,813 source bytes.
+  Published derivatives total 12,358,299 bytes. The original seven source files
+  total 112,451,813 bytes.
+- Removed “Hi, I’m David” and moved “Out in the sun” to the third featured card,
+  also replacing the small profile photo. Checked the six-item order, balanced
+  grid, image loading, updated viewer counter, next-item navigation and no
+  horizontal overflow at 1440, 768, 390 and 320px. Reviewed desktop/mobile captures.
 - Reviewed the responsive grid at 1440, 768, 390 and 320px, without horizontal
   overflow. Full-size photos use contain sizing in the viewer. Desktop/mobile
   screenshots are stored locally under `output/playwright/gallery-*.png`.
-- All seven items opened successfully in Chromium, including actual playback of
+- All seven original items opened successfully in Chromium, including actual playback of
   all three videos. No gallery video requests occurred before opening an item.
   Gallery videos now start muted and have no audio tracks. Their versioned
   `-silent.mp4` URLs avoid cached sound-enabled copies. Encoded video hashes match

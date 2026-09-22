@@ -59,7 +59,7 @@ export default function DavidGallery() {
         </div>
         <div className={styles.intro}>
           <div className={styles.identity}>
-            <img src="/gallery/training-selfie-thumb.webp" width={48} height={48} alt="" loading="lazy" decoding="async" />
+            <img src="/gallery/sunshine-selfie-thumb.webp" width={48} height={48} alt="" loading="lazy" decoding="async" />
             <div><strong>David Attias</strong><a href="https://x.com/david_attisaas" target="_blank" rel="noopener noreferrer">@david_attisaas <ArrowUpRight size={14} aria-hidden="true" /></a></div>
           </div>
           <p>A few training sessions, a little sunshine, and the person behind this whole idea.</p>
@@ -81,7 +81,7 @@ export default function DavidGallery() {
       </div>
 
       <div className={styles.footer}>
-        <p><span className={styles.dot} aria-hidden="true" /> 4 photos · 3 videos <span className={styles.footerHint}>· Open any moment</span></p>
+        <p><span className={styles.dot} aria-hidden="true" /> 3 photos · 3 videos <span className={styles.footerHint}>· Open any moment</span></p>
         <a href="#sponsorships">Back these legs <ArrowUpRight size={17} aria-hidden="true" /></a>
       </div>
     </section>
