@@ -1,6 +1,6 @@
 # Verification report
 
-Updated 21 September 2026. This records executed checks, not a claim that live
+Updated 22 September 2026. This records executed checks, not a claim that live
 payments or deployment are ready.
 
 ## Automated checks
@@ -89,6 +89,14 @@ widths. Photo-viewer checks covered:
 
 Desktop front/back and mobile framing were visually reviewed. Reference captures
 and verification scripts are kept locally under `output/playwright/`.
+
+## Running background — 22 September 2026
+
+- Added the confirmed half-marathon and long-distance sprinting background to
+  the backstory. The hero now says “My first marathon” instead of “Zero training.”
+- Verified both statements in Chromium at 1440px and 390px widths, with no
+  horizontal overflow. Reviewed desktop/mobile backstory screenshots.
+- The production build and TypeScript passed.
 
 ## Optional background music — 22 September 2026
 
