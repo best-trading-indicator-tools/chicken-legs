@@ -1,7 +1,7 @@
 # Chicken Legs — implementation plan
 
 Status: the site is deployed at https://chicken-legs.vercel.app. Neon PostgreSQL in Frankfurt is connected and initialized. Real Stripe sandbox checkouts for $1,000 → $2,000 → $4,000 and both fee-adjusted refunds passed. Production secrets and a version-pinned webhook are prepared; live checkout remains disabled while production scheduling and the hosting plan are finalized.
-Updated: 21 September 2026.
+Updated: 22 September 2026.
 
 ## Confirmed brief
 
@@ -19,6 +19,7 @@ Updated: 21 September 2026.
 | Presentation | Use only `assets/private/V2/vuedefaceV2.png` and `assets/private/V2/vuededosV2.png` for the public front/back photo viewer. Preserve the supplied appearance. Eight clickable sponsorship hotspots; Front/Back and arrow buttons switch views. Left/right keyboard shortcuts work while the photo is on screen, without first focusing it, and pause for typing or open dialogs. |
 | Typography | Body copy and form controls use 16px text; compact labels never fall below 14px. Apply the same scale across the whole site, dialogs and mobile layouts. Wrap/reflow content instead of shrinking it. |
 | Roast backstory | Show the supplied `assets/private/Chicken legs roasts 800X800.png` collage directly below the hero, explaining how the comments motivated the runner to show the world how strong his legs are. This 800×800 source replaces the initial 256×256 image. Keep the original private and publish a metadata-free WebP derivative. |
+| Music | Use `assets/private/music/chicken-music.mp3` for an optional looping soundtrack. A floating music toggle starts off and only downloads/plays the track after a visitor turns it on. Keep the source private and publish a metadata-free audio derivative. |
 | Repository | `best-trading-indicator-tools/chicken-legs`; commit and push each completed task directly to `main`, without pull requests. |
 
 The user added the two front ankle placements after the original six-spot setup. All eight use the same independent starting-price and takeover rules.

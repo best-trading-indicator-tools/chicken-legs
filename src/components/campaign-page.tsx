@@ -2,6 +2,7 @@
 
 import PhotoViewer from './photo-viewer';
 import RoastStory from './roast-story';
+import MusicToggle from './music-toggle';
 import SponsorDialog from './sponsor-dialog';
 import sponsorStyles from './sponsor-dialog.module.css';
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
@@ -176,6 +177,7 @@ export default function CampaignPage() {
     </main>
     <footer className="site-footer"><a className="brand" href="/"><span className="brand-chicken">🐔</span><span>CHICKEN<span className="brand-light">LEGS</span></span></a><span>A RUNNING JOKE. A REAL MARATHON.</span><button onClick={() => setRulesOpen(true)}>Auction & refund rules <ArrowUpRight size={13} /></button></footer>
 
+    <MusicToggle />
     <SponsorDialog open={sponsorsOpen} slots={auctions.slots} loading={!auctionsLoaded} loadError={loadError} refreshing={refreshing} onClose={() => setSponsorsOpen(false)} onRetry={refresh} onChooseSpot={closeSponsorsAndChooseSpot} />
     <dialog ref={checkoutDialog} id="checkout-dialog" className="checkout-dialog" onCancel={() => setCheckoutOpen(false)} onClose={() => setCheckoutOpen(false)} onClick={event => { if (event.target === event.currentTarget) setCheckoutOpen(false); }} aria-labelledby="checkout-title">
       <div className="dialog-content"><button className="dialog-close" aria-label="Close sponsorship" onClick={() => setCheckoutOpen(false)}><X size={20} /></button><span className="eyebrow">YOUR NEXT BIG BRAND PLACEMENT</span><h2 id="checkout-title">THE {selected.label.toUpperCase()}.</h2><div className="checkout-price"><span>{selected.nextBidCents === null ? 'Unavailable' : formatUsd(selected.nextBidCents)} <small>USD</small></span><span>{selected.sponsor ? 'Take over this spot' : 'Opening sponsorship'}</span></div><div className="checkout-benefits"><span><Check size={14} /> Race-day logo tattoo if you win</span><span><Check size={14} /> Your brand in the bid history</span></div>

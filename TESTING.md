@@ -90,6 +90,28 @@ widths. Photo-viewer checks covered:
 Desktop front/back and mobile framing were visually reviewed. Reference captures
 and verification scripts are kept locally under `output/playwright/`.
 
+## Optional background music — 22 September 2026
+
+- Added a persistent music toggle, with an icon-only 48px button on mobile and
+  an on/off label on desktop. Music starts off after loading or refreshing the
+  page; no audio request occurs until the first activation.
+- Real Chromium playback checks passed: the supplied track plays, pauses,
+  resumes from its position, and loops after seeking to the end. Enter and Space
+  operate the button, and its pressed state follows playback. Default volume is
+  40% in browsers supporting programmatic volume.
+- A blocked audio request displayed a retry message and recovered when unblocked.
+  A delayed request could be cancelled without later starting playback or showing
+  a false failure. Browser request fixtures were removed after verification.
+- Playback and pause passed at 390×844 and 320×740. The control stays visible while
+  scrolling, fits without horizontal overflow, and leaves the footer accessible.
+  Desktop/mobile screenshots were reviewed under `output/playwright/music-*.png`.
+  These were browser viewport checks, not physical-device tests.
+- `public/audio/chicken-legs-anthem.mp3` is a metadata-free, 5,713,919-byte
+  derivative of the ignored `assets/private/music/chicken-music.mp3`. The full
+  238.004535-second track retains its original 192 kbps stereo audio; decoded PCM
+  SHA-256 hashes match. The source remains private and unchanged.
+- The production build and TypeScript passed. No payment behavior changed.
+
 ## Photo arrow controls — 21 September 2026
 
 - Left/right keys switch views while the photograph is visible, without first
