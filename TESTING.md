@@ -90,6 +90,14 @@ widths. Photo-viewer checks covered:
 Desktop front/back and mobile framing were visually reviewed. Reference captures
 and verification scripts are kept locally under `output/playwright/`.
 
+## Section order — 22 September 2026
+
+- Moved the campaign stats and “Leg day. Pay day.” explanation directly after
+  the hero, followed by the backstory and gallery.
+- Chromium checks at 1440px and 390px confirmed the section order, no duplicate
+  sections, no horizontal overflow and a working small-print rules button.
+  Reviewed desktop/mobile screenshots. The production build and TypeScript passed.
+
 ## Personal photo/video gallery — 22 September 2026
 
 - The gallery now contains three photos and three training clips from the ignored
@@ -246,7 +254,7 @@ and verification scripts are kept locally under `output/playwright/`.
 - Removed the redundant “Read a few of the roasts” expandable quotes. A rendered
   page check confirmed they are absent while the collage and full-size link remain;
   the production build and TypeScript passed after removal.
-- The new backstory is the first section after the hero and preserves the existing
+- The backstory follows the stats and sponsorship explanation and preserves the existing
   `#the-story` navigation target without duplicating the story further down the page.
 - Browser checks passed at 1440, 1024, 768, 390 and 320px: the supplied collage
   loads at its original aspect ratio, there is no horizontal overflow, and body
