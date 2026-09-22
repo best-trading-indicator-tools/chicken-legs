@@ -1,9 +1,9 @@
 # Payment operations
 
-The real Stripe sandbox checkout → webhook → takeover → refund sequence passed
-on 21 September 2026; see `TESTING.md`. Production is connected to the user-approved
-Neon database in Frankfurt, with an empty set of eight auction slots. Live checkout
-remains disabled during final deployed recovery and failure-case verification. Unit tests use
+Live checkout was enabled on 22 September 2026 after the hosted Stripe test suite,
+native Vercel recovery and independent health monitoring passed; see `TESTING.md`.
+Production uses the user-approved Neon database in Frankfurt and launched with
+eight empty slots. Test data stayed in a separate database. Unit tests use
 synthetic Stripe responses; PostgreSQL tests require `TEST_DATABASE_URL`.
 No financial API call is part of `npm test`.
 
@@ -73,8 +73,7 @@ its provider event refreshes the recorded state and flags it for review. The
 current sponsor remains valid and no replacement refund is submitted automatically.
 Do not manually refund a payment without reconciling its existing obligation.
 
-Outstanding operations work: enable and verify production scheduling and the
-deployed webhook; complete provider-specific dispute recovery checks; add an
+Outstanding operations work: add an
 authenticated operator interface and reviewed job-recovery workflow; secure
 sponsor-edit/upload access and artwork export; configure production logs,
 alerting, backups, secrets, and public support/seller/cancellation/tax terms.
@@ -93,8 +92,10 @@ The Neon integration supplies prefixed `CHICKEN_` variables because an empty
 `DATABASE_URL` already existed on Vercel. The application's production
 `DATABASE_URL` uses the direct/unpooled connection with full TLS verification,
 preserving the worker's session advisory lock. Preview configuration is separate.
-The signed live webhook uses API version `2026-08-26.dahlia` and is initially
-disabled until the deployed handler is checked. Never test cards against live keys.
+The enabled live webhook uses API version `2026-08-26.dahlia` at
+`https://www.chickenlegs.wtf/api/stripe/webhook`, matching the canonical APP_URL.
+Never test cards against live keys. A signed non-financial production probe passed;
+actual payment/provider round trips were tested only in the isolated sandbox.
 
 Neon's free compute allowance is finite. Frequent polling keeps its compute awake;
 monitor the project's usage before its allowance is exhausted and choose an

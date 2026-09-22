@@ -1,6 +1,6 @@
 # Chicken Legs — implementation plan
 
-Status: the site is deployed at https://www.chickenlegs.wtf. The current Vercel team is upgraded to Pro. Neon PostgreSQL in Frankfurt is connected. Real Stripe sandbox checkouts for $1,000 → $2,000 → $4,000, signed webhooks delivered directly to Vercel, and both fee-adjusted refunds passed in an isolated hosted environment. Live checkout remains disabled while scheduled recovery and the remaining provider failure cases are verified.
+Status: live Stripe checkout is enabled at https://www.chickenlegs.wtf. The existing Vercel team is on Pro, with native one-minute payment recovery and an independent GitHub health monitor. All 102 automated checks passed; real Stripe test checkouts, doubling, fee-adjusted refunds, delayed/failed refunds, disputes, 3-D Secure, signed webhooks and missing-delivery recovery were verified in an isolated hosted environment. Production launched with eight empty slots and no test bids.
 Updated: 22 September 2026.
 
 ## Confirmed brief
@@ -157,7 +157,7 @@ Stripe can leave refunds pending when the available balance is insufficient. Dis
 
 - Final presentation sources received: `assets/private/V2/vuedefaceV2.png` and `assets/private/V2/vuededosV2.png`. No additional photos are required for this version.
 - Public name/handle, domain, and support contact. These can remain configurable during the build.
-- The live Stripe key is stored in ignored `.env.local`; the supplied test key is in ignored `.env.sandbox.local`. Both authenticated against the same France account. Real sandbox takeovers and EUR-fee refunds passed. The user chose to keep the current Vercel team and upgraded it to Pro. Native one-minute recovery is configured in vercel.json, with independent GitHub Actions health monitoring. Verify both on the deployed build before enabling live checkout.
+- The live Stripe key is stored in ignored `.env.local`; the supplied test key is in ignored `.env.sandbox.local`. Both authenticated against the same France account. Real sandbox takeovers and EUR-fee refunds passed. The user chose to keep the current Vercel team and upgraded it to Pro. Native one-minute recovery is configured in vercel.json, with independent GitHub Actions health monitoring. Both were verified on production before enabling live checkout on 22 September 2026.
 - Branding dimensions/print requirements and sponsor-logo acceptance rules before taking real payments.
 - Seller/invoicing details and whether advertised prices include applicable taxes. Do not silently add charges to the promised exact doubling.
 - Final customer-facing cancellation/non-participation policy. Recommendation: full refund if the promised race-day placement cannot be delivered; ordinary takeover refunds retain the stated fee deduction. This recommendation is not yet a confirmed campaign term.
@@ -183,4 +183,6 @@ Stripe can leave refunds pending when the available balance is insufficient. Dis
 
 Blender 4.5.3 is available locally under ignored `output/blender-tool/`. No live payment or refund was used for testing. Read `TESTING.md` and `database/OPERATIONS.md` for precise verification limits and remaining production work, including operator/artwork management and final seller terms.
 
-- Expanded payment regression coverage to 90 passing tests with real PostgreSQL and simulated provider responses. Fixed reconciliation of refunds that fail after initially succeeding; these now require operator review without issuing a second refund. Added worker heartbeat and queue/refund health checks.
+- Expanded payment regression coverage to 102 passing tests with real PostgreSQL and simulated provider responses. Fixed reconciliation of refunds that fail after initially succeeding; these now require operator review without issuing a second refund. Added worker heartbeat and queue/refund health checks.
+
+- Enabled live checkout after hosted verification, updated APP_URL and the live webhook to the canonical www.chickenlegs.wtf domain, verified automatic recovery and the production monitor, and removed the temporary test deployment. No real-money transaction was used for testing. Customer payment notices now distinguish review, pending refunds, issued refunds and failed refunds.

@@ -1,7 +1,8 @@
 # Verification report
 
-Updated 22 September 2026. This records executed checks, not a claim that live
-payments or deployment are ready.
+Updated 22 September 2026. Live checkout is enabled at https://www.chickenlegs.wtf.
+This report distinguishes real Stripe test-mode checks, simulated regressions and
+production configuration checks; no real-money payment was used for testing.
 
 ## Hosted payment verification — 22 September 2026
 
@@ -44,8 +45,29 @@ payments or deployment are ready.
 - Additional regression tests cover prior manual partial refunds, payment/expiry
   races, persistent rate limits and all public payment/refund status responses.
   Build and TypeScript passed; `npm audit --omit=dev` reported zero vulnerabilities.
-- Live checkout remains disabled pending final deployed UI and missing-webhook
-  recovery checks. No real-money transaction was used.
+- With the isolated test webhook disabled, a real paid checkout was recovered
+  by native Vercel cron using Stripe's event history after its browser was closed.
+  Exactly one bid was accepted. No manual worker invocation or fabricated success
+  event was used for this recovery case.
+- The corrected accepted/refunded/refund-review/payment-review messages passed
+  Playwright checks at 390px and 1440px without horizontal overflow.
+- Final test data: 12 checkouts, nine accepted bids, two unpaid/expired checkouts,
+  one disputed payment held for review; four refunds (three succeeded and one
+  deliberately failed and flagged). No test records entered production. The
+  temporary test deployment was removed and its webhook disabled after verification.
+- Live checkout was enabled only after those checks. Production reports live mode,
+  eight unreserved $1,000 slots, zero bids and healthy recovery. The canonical
+  origin and live webhook both use `https://www.chickenlegs.wtf`; the endpoint is
+  enabled at the pinned API version and acknowledged a signed non-financial probe.
+  This probe is an application-level check, not a real live payment.
+- The live checkout dialog passed browser checks at 320, 390 and 1440px: the Stripe
+  continuation button is enabled, all eight placements exist and no horizontal
+  overflow occurs. No live checkout was submitted and no real money was charged.
+- Production GitHub monitoring passed [run 35696538925](https://github.com/best-trading-indicator-tools/chicken-legs/actions/runs/35696538925).
+  Native Vercel cron supplies the recovery; GitHub only checks health.
+- These checks do not guarantee every issuer or future outage. Failed refunds and
+  disputes intentionally require operator review; bank receipt/settlement timing
+  and live FX outcomes cannot be established with test cards.
 
 ## Automated checks
 
@@ -380,7 +402,7 @@ The probe created no payment/event records. The authenticated operations endpoin
 reported zero pending jobs and refunds. These checks do not establish actual
 Stripe-to-production delivery; the live endpoint remains disabled pending launch.
 
-Pending production verification: provider webhook delivery, scheduled worker and
-job monitoring. Public seller/support/cancellation/tax details and artwork
-management remain operational follow-ups. A sandbox does not prove live settlement
-timing, insufficient-balance refunds or every issuer/dispute scenario.
+The 22 September checks above supersede the earlier pending scheduler/monitoring
+items. Public seller/cancellation/tax details and artwork management remain
+operational follow-ups. No actual live financial transaction was performed; a
+sandbox cannot prove live settlement timing or every issuer/dispute scenario.
