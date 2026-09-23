@@ -114,6 +114,13 @@ production configuration checks; no real-money payment was used for testing.
   Stripe responses remained simulated. The isolated test cluster was stopped
   after verification and did not change the app's local environment.
 
+## Two-second photo switching — 23 September 2026
+
+- Changed the hero front/back interval to two seconds and updated the accessible
+  instructions. Playwright measured consecutive changes at 2.034 and 2.045 seconds
+  and verified the pause control still stops switching. TypeScript and the
+  production build passed.
+
 ## Automatic front/back photographs — 22 September 2026
 
 - The hero photographs alternate every three seconds after both images load and

@@ -150,7 +150,7 @@ export function PhotoViewer({ selectedSlot, onSelectSlot, view, onViewChange, au
       timer = setInterval(() => {
         if (document.querySelector('dialog[open], [role="dialog"][aria-modal="true"]')) return;
         onAutoViewChange(view === 'front' ? 'back' : 'front');
-      }, 3000);
+      }, 2000);
     };
     const enter = (event: PointerEvent) => { hovered = event.pointerType !== 'touch'; updateTimer(); };
     const leave = () => { hovered = false; updateTimer(); };
@@ -190,7 +190,7 @@ export function PhotoViewer({ selectedSlot, onSelectSlot, view, onViewChange, au
       }}
     >
       <p id={instructionsId} className={styles.visuallyHidden}>
-        Photographs switch automatically every three seconds. Use the pause button to stop, or the front and back buttons to choose a photograph. While the photograph is on screen, Left and Right arrow keys switch views without needing to focus it first. Manual changes stop automatic switching. Shortcuts pause while typing or using a dialog. Tab to a sponsorship marker and press Enter to select the spot.
+        Photographs switch automatically every two seconds. Use the pause button to stop, or the front and back buttons to choose a photograph. While the photograph is on screen, Left and Right arrow keys switch views without needing to focus it first. Manual changes stop automatic switching. Shortcuts pause while typing or using a dialog. Tab to a sponsorship marker and press Enter to select the spot.
       </p>
       {(["front", "back"] as const).map((side) => (
         // Both photographs load once, so changing view is immediate. The source
