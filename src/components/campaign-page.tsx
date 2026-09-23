@@ -43,6 +43,7 @@ export default function CampaignPage() {
   const checkoutDialog = useRef<HTMLDialogElement>(null);
   const rulesDialog = useRef<HTMLDialogElement>(null);
   const idempotencyKey = useRef<string | null>(null);
+  const refreshInFlight = useRef(false);
   const selected = auctions.slots.find(slot => slot.id === selectedId) ?? auctions.slots[0];
   const history = auctions.slots.flatMap(slot => slot.history.map(bid => ({ ...bid, slotLabel: slot.label }))).sort((a, b) => new Date(b.acceptedAt).getTime() - new Date(a.acceptedAt).getTime());
   const available = auctions.slots.filter(slot => !slot.sponsor).length;
@@ -60,16 +61,28 @@ export default function CampaignPage() {
   }, []);
 
   const refresh = useCallback(async () => {
+    if (refreshInFlight.current) return;
+    refreshInFlight.current = true;
     setRefreshing(true);
     try {
-      const response = await fetch('/api/auctions', { cache: 'no-store' });
+      const response = await fetch('/api/auctions', { cache: 'no-store', signal: AbortSignal.timeout(12000) });
       if (!response.ok) throw new Error('Unavailable');
       const data = await response.json() as AuctionSnapshot;
       setAuctions(data); setLoadError(false); setAuctionsLoaded(true);
     } catch { setLoadError(true); }
-    finally { setRefreshing(false); }
+    finally { refreshInFlight.current = false; setRefreshing(false); }
   }, []);
-  useEffect(() => { void refresh(); const timer = setInterval(refresh, 15000); return () => clearInterval(timer); }, [refresh]);
+  useEffect(() => {
+    void refresh();
+    const timer = setInterval(refresh, 15000);
+    window.addEventListener('online', refresh);
+    window.addEventListener('focus', refresh);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('online', refresh);
+      window.removeEventListener('focus', refresh);
+    };
+  }, [refresh]);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const session = params.get('session_id');
@@ -107,7 +120,7 @@ export default function CampaignPage() {
     const slot = auctions.slots.find(slot => slot.id === id);
     if (!slot) return;
     selectSlot(id);
-    if (slot.nextBidCents === null || slot.reserved || auctions.closed || loadError) return;
+    if (!auctionsLoaded || slot.nextBidCents === null || slot.reserved || auctions.closed || loadError) return;
     idempotencyKey.current = crypto.randomUUID(); setCheckoutOpen(true);
   }
   function openCheckout() {
@@ -169,11 +182,11 @@ export default function CampaignPage() {
         </div>
 
         <aside className="sponsor-panel" id="sponsorships" aria-labelledby="sponsorship-title">
-          <div className="panel-status"><span className="status-dot" /> {auctions.closed ? 'BIDDING CLOSED' : auctions.mode === 'live' && auctions.paymentsEnabled ? 'SPONSORSHIPS ARE OPEN' : auctions.mode === 'sandbox' ? 'TEST DRIVE · NO REAL PAYMENTS' : 'FIRST LOOK · BIDDING OPENS SOON'}<span>↗</span></div>
+          <div className="panel-status"><span className="status-dot" /> {loadError ? 'SPOT AVAILABILITY UNAVAILABLE' : !auctionsLoaded ? 'CHECKING SPOT AVAILABILITY' : auctions.closed ? 'BIDDING CLOSED' : auctions.mode === 'live' && auctions.paymentsEnabled ? 'SPONSORSHIPS ARE OPEN' : auctions.mode === 'sandbox' ? 'TEST DRIVE · NO REAL PAYMENTS' : 'FIRST LOOK · BIDDING OPENS SOON'}<span>↗</span></div>
           <div className="panel-intro">
             <div className="panel-heading"><h2 id="sponsorship-title">PICK YOUR<br /> PIECE OF LEG.</h2><p>Click a spot to see sponsorship details.</p></div>
-            <div className="panel-footer"><button className="primary-button sponsor-cta" onClick={openCheckout} aria-haspopup="dialog" aria-controls="checkout-dialog" disabled={auctions.closed || selected.reserved || loadError || selected.nextBidCents === null}>{auctions.closed ? 'The legs are spoken for' : selected.reserved ? 'Spot temporarily reserved' : <>Claim the {selected.label.toLowerCase()} <ArrowUpRight size={18} /></>}</button><p><LockKeyhole size={11} /> {auctions.paymentsEnabled ? 'Secure payment with Stripe' : 'Explore a spot · Payments aren’t open yet'}</p></div>
-            {loadError && <p className="inline-error" role="status">Spot availability is temporarily unavailable. <button onClick={refresh}>Retry</button></p>}
+            <div className="panel-footer"><button className="primary-button sponsor-cta" onClick={openCheckout} aria-haspopup="dialog" aria-controls="checkout-dialog" disabled={!auctionsLoaded || auctions.closed || selected.reserved || loadError || selected.nextBidCents === null}>{auctions.closed ? 'The legs are spoken for' : selected.reserved ? 'Spot temporarily reserved' : <>Claim the {selected.label.toLowerCase()} <ArrowUpRight size={18} /></>}</button><p><LockKeyhole size={11} /> {loadError ? 'Reconnecting · Please try again shortly' : !auctionsLoaded ? 'Checking spot availability…' : auctions.paymentsEnabled ? 'Secure payment with Stripe' : 'Explore a spot · Payments aren’t open yet'}</p></div>
+            {loadError && <p className="inline-error" role="status">We couldn’t load spot availability. Retrying automatically. <button onClick={refresh} disabled={refreshing}>{refreshing ? 'Retrying…' : 'Retry now'}</button></p>}
           </div>
           <div className="slots-list" aria-label="Sponsorship spots">{auctions.slots.map((slot, index) => <button key={slot.id} type="button" className={`slot-row ${selectedId === slot.id ? 'selected' : ''}`} onClick={() => openSlotCheckout(slot.id)} aria-pressed={selectedId === slot.id} aria-haspopup="dialog" aria-controls="checkout-dialog">
             <span className="slot-number">0{index + 1}</span><span className="slot-description"><strong>{slot.label}</strong><span>{slot.reserved ? 'Checkout in progress' : slot.sponsor ? slot.sponsor.name : 'Your brand here'}</span></span><span className="slot-price">{slot.nextBidCents === null ? 'At limit' : formatUsd(slot.nextBidCents)}<span>{slot.sponsor ? 'to take over' : 'opening bid'}</span></span><ArrowUpRight className="slot-arrow" size={15} />

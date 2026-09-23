@@ -4,18 +4,35 @@ import { Pool, type PoolClient } from "pg";
 const globalPool = globalThis as unknown as { auctionPool?: Pool };
 export function db(): Pool {
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is not configured.");
-  return globalPool.auctionPool ??= new Pool({ connectionString: process.env.DATABASE_URL, max: 5, connectionTimeoutMillis: 5_000, idleTimeoutMillis: 10_000 });
+  if (!globalPool.auctionPool) {
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 5,
+      connectionTimeoutMillis: 5_000, idleTimeoutMillis: 10_000,
+      // A dropped network must not leave every checked-out connection waiting
+      // forever and make subsequent availability requests time out on the pool.
+      query_timeout: 15_000, keepAlive: true, keepAliveInitialDelayMillis: 10_000 });
+    pool.on("error", () => {
+      // pg removes the failed idle client automatically. Handle the event so a
+      // laptop sleep/network change cannot become an uncaught server exception.
+      console.error("An idle database connection was lost; the pool will replace it.");
+    });
+    globalPool.auctionPool = pool;
+  }
+  return globalPool.auctionPool;
 }
 
 export async function transaction<T>(work: (client: PoolClient) => Promise<T>): Promise<T> {
   const client = await db().connect();
+  let discard = false;
   try {
     await client.query("BEGIN");
     const result = await work(client);
     await client.query("COMMIT");
     return result;
-  } catch (error) { await client.query("ROLLBACK"); throw error; }
-  finally { client.release(); }
+  } catch (error) {
+    try { await client.query("ROLLBACK"); }
+    catch { discard = true; }
+    throw error;
+  } finally { client.release(discard); }
 }
 
 export async function enqueue(client: Pick<PoolClient, "query">, kind: "event" | "reservation" | "refund", id: string, when = new Date()): Promise<void> {

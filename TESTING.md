@@ -1,8 +1,33 @@
 # Verification report
 
-Updated 22 September 2026. Live checkout is enabled at https://www.chickenlegs.wtf.
+Updated 23 September 2026. Live checkout is enabled at https://www.chickenlegs.wtf.
 This report distinguishes real Stripe test-mode checks, simulated regressions and
 production configuration checks; no real-money payment was used for testing.
+
+## Local availability recovery — 23 September 2026
+
+- Reproduced HTTP 503 from localhost while the public API and production payment
+  health were healthy. The development server had been running since 21 September
+  and logged unhandled `EHOSTUNREACH` / `EADDRNOTAVAIL` database errors. Fresh
+  connections worked; restarting the development server restored all eight slots.
+- Added handling for failed idle connections, a 15-second database query timeout,
+  TCP keepalive, and disposal of clients whose transaction rollback fails. The
+  original transaction error is preserved and no credentials are logged.
+- Browser requests time out after 12 seconds, do not overlap, and refresh on
+  reconnect or focus as well as the existing 15-second polling interval. Loading
+  and outages have distinct messages; checkout remains blocked until availability
+  is known. A failed load no longer incorrectly says bidding has not opened.
+- **106/106 automated tests passed, zero skipped**, against isolated local
+  PostgreSQL with simulated Stripe responses. Four new regressions exercise idle
+  network errors and healthy/failed transaction cleanup. TypeScript and the
+  production build passed.
+- **17 Playwright assertions passed** for initial loading, HTTP 503, duplicate
+  refresh suppression, disabled checkout during an outage, explicit retry,
+  reconnect and scheduled recovery, and the left front ankle dialog. Browser
+  fixtures simulated live status; no checkout was submitted. Mobile error copy
+  was visually reviewed and responsive checks covered 320, 390 and 1440px.
+- Local checkout remains disabled by its existing configuration. Production
+  checkout remains enabled; neither environment's payment settings were changed.
 
 ## Hosted payment verification — 22 September 2026
 

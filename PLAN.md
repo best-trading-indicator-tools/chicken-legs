@@ -1,7 +1,7 @@
 # Chicken Legs — implementation plan
 
 Status: live Stripe checkout is enabled at https://www.chickenlegs.wtf. The existing Vercel team is on Pro, with native one-minute payment recovery and an independent GitHub health monitor. All 102 automated checks passed; real Stripe test checkouts, doubling, fee-adjusted refunds, delayed/failed refunds, disputes, 3-D Secure, signed webhooks and missing-delivery recovery were verified in an isolated hosted environment. Production launched with eight empty slots and no test bids.
-Updated: 22 September 2026.
+Updated: 23 September 2026.
 
 ## Confirmed brief
 
@@ -165,6 +165,7 @@ Stripe can leave refunds pending when the available balance is insufficient. Dis
 
 ## Work completed so far
 
+- Fixed a localhost availability outage on 23 September: the long-running development server logged unhandled database network errors and returned 503 while fresh connections and production remained healthy. Restarting restored all eight spots. Added idle-connection error handling, bounded database queries, broken-connection disposal, and browser reconnection/timeout handling. Availability failures no longer display the campaign preview status. All 106 automated tests, TypeScript, the production build and 17 browser recovery checks passed; no payment was submitted.
 - Inspected the reference site, sponsor detail and auction rules in a browser.
 - Verified the official race date and incorporated the user's distance/deadline/currency answers.
 - Researched Stripe keys, fee retrieval, FX, refunds, Checkout reservation expiry, webhooks and idempotency.
