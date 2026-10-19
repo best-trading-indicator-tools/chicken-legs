@@ -39,14 +39,13 @@ No financial API call is part of `npm test`.
    disputed placements and refund status. Alert on review jobs and worker
    inactivity. Its `health` report flags a missing/older-than-ten-minute worker
    heartbeat, review jobs, overdue work, stalled reservations, disputed placements
-   and refunds pending over 24 hours. The independent GitHub Actions workflow
-   `.github/workflows/payment-monitor.yml` checks this report every five minutes
-   (GitHub can delay scheduled runs). Set the repository secret
-   `PAYMENT_WORKER_SECRET` to the worker secret, manually verify the workflow, then
-   set repository variable `PAYMENT_MONITOR_ENABLED=true`. A failed check produces
-   a failed workflow run; operators should enable GitHub failed-workflow
-   notifications. Recovery itself runs on Vercel, independently of GitHub.
-   Do not switch on checkout before scheduling and monitoring work.
+   and refunds pending over 24 hours. The independent GitHub Actions health monitor
+   was disabled and its scheduled workflow removed at the user's request on
+   19 October 2026 to stop recurring failure emails. The repository variable
+   `PAYMENT_MONITOR_ENABLED` is set to `false`. For a manual check, run
+   `node scripts/check-payment-health.mjs` with `PAYMENT_STATUS_URL` and
+   `PAYMENT_WORKER_SECRET` supplied through the local environment.
+   Recovery itself continues to run on Vercel, independently of GitHub.
 
 The public APIs never expose billing emails, Stripe identifiers or fee evidence.
 Return pages query `/api/checkout/status?session_id=...`; they cannot confirm a

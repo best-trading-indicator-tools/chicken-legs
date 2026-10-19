@@ -1,7 +1,7 @@
 # Chicken Legs — implementation plan
 
-Status: live Stripe checkout is enabled at https://www.chickenlegs.wtf. The existing Vercel team is on Pro, with native one-minute payment recovery and an independent GitHub health monitor. All 102 automated checks passed; real Stripe test checkouts, doubling, fee-adjusted refunds, delayed/failed refunds, disputes, 3-D Secure, signed webhooks and missing-delivery recovery were verified in an isolated hosted environment. Production launched with eight empty slots and no test bids.
-Updated: 23 September 2026.
+Status: live Stripe checkout is enabled at https://www.chickenlegs.wtf. The existing Vercel team is on Pro, with native one-minute payment recovery. The independent GitHub health monitor was disabled and its workflow removed at the user's request on 19 October 2026. All 102 automated checks passed; real Stripe test checkouts, doubling, fee-adjusted refunds, delayed/failed refunds, disputes, 3-D Secure, signed webhooks and missing-delivery recovery were verified in an isolated hosted environment. Production launched with eight empty slots and no test bids.
+Updated: 19 October 2026.
 
 ## Confirmed brief
 
@@ -158,13 +158,14 @@ Stripe can leave refunds pending when the available balance is insufficient. Dis
 
 - Final presentation sources received: `assets/private/V2/vuedefaceV2.png` and `assets/private/V2/vuededosV2.png`. No additional photos are required for this version.
 - Public name/handle, domain, and support contact. These can remain configurable during the build.
-- The live Stripe key is stored in ignored `.env.local`; the supplied test key is in ignored `.env.sandbox.local`. Both authenticated against the same France account. Real sandbox takeovers and EUR-fee refunds passed. The user chose to keep the current Vercel team and upgraded it to Pro. Native one-minute recovery is configured in vercel.json, with independent GitHub Actions health monitoring. Both were verified on production before enabling live checkout on 22 September 2026.
+- The live Stripe key is stored in ignored `.env.local`; the supplied test key is in ignored `.env.sandbox.local`. Both authenticated against the same France account. Real sandbox takeovers and EUR-fee refunds passed. The user chose to keep the current Vercel team and upgraded it to Pro. Native one-minute recovery is configured in vercel.json. Recovery and the original GitHub Actions health monitor were verified on production before enabling live checkout on 22 September 2026. The GitHub monitor was disabled and removed on 19 October 2026 at the user's request.
 - Branding dimensions/print requirements and sponsor-logo acceptance rules before taking real payments.
 - Seller/invoicing details and whether advertised prices include applicable taxes. Do not silently add charges to the promised exact doubling.
 - Final customer-facing cancellation/non-participation policy. Recommendation: full refund if the promised race-day placement cannot be delivered; ordinary takeover refunds retain the stated fee deduction. This recommendation is not yet a confirmed campaign term.
 
 ## Work completed so far
 
+- Disabled the GitHub Payment health monitor, set `PAYMENT_MONITOR_ENABLED=false`, and removed its scheduled workflow on 19 October 2026 to stop recurring workflow failure emails. Native Vercel payment recovery remains configured.
 - Fixed a localhost availability outage on 23 September: the long-running development server logged unhandled database network errors and returned 503 while fresh connections and production remained healthy. Restarting restored all eight spots. Added idle-connection error handling, bounded database queries, broken-connection disposal, and browser reconnection/timeout handling. Availability failures no longer display the campaign preview status. All 106 automated tests, TypeScript, the production build and 17 browser recovery checks passed; no payment was submitted.
 - Inspected the reference site, sponsor detail and auction rules in a browser.
 - Verified the official race date and incorporated the user's distance/deadline/currency answers.
